@@ -1,0 +1,188 @@
+{
+  "category": "Lending",
+  "chains": [
+    "Ethereum",
+    "Avalanche",
+    "Polygon",
+    "Fantom",
+    "Base",
+    "Soneium",
+    "Sonic",
+    "X Layer",
+    "Arbitrum",
+    "Metis",
+    "Harmony",
+    "Mantle",
+    "BSC",
+    "ZKsync Era",
+    "Linea",
+    "OP Mainnet",
+    "Celo",
+    "MegaETH",
+    "Plasma",
+    "Scroll",
+    "Gnosis",
+    "Aptos"
+  ],
+  "comparable_protocols": [
+    {
+      "category": "Lending",
+      "name": "Aave V3",
+      "tvl": 13644851888.153059
+    },
+    {
+      "category": "Lending",
+      "name": "Morpho Blue",
+      "tvl": 6724470877.028863
+    },
+    {
+      "category": "Lending",
+      "name": "SparkLend",
+      "tvl": 3610784009.2510715
+    },
+    {
+      "category": "Lending",
+      "name": "JustLend",
+      "tvl": 3565759943.7792416
+    },
+    {
+      "category": "Lending",
+      "name": "Maple",
+      "tvl": 1695815250.33102
+    }
+  ],
+  "description": "Aave is an Open Source and Non-Custodial protocol to earn interest on deposits and borrow assets",
+  "display_name": "Aave",
+  "fees_24h_usd": null,
+  "fees_7d_usd": null,
+  "fetched_at": "2026-04-25T14:31:41.402024+00:00",
+  "protocol": "aave",
+  "revenue_24h_usd": null,
+  "token_symbol": "AAVE",
+  "tvl_30d_change_pct": -43.54,
+  "tvl_7d_change_pct": -46.4,
+  "tvl_history_30d": [
+    {
+      "date": 1774656000,
+      "tvl": 23783266474.0
+    },
+    {
+      "date": 1774742400,
+      "tvl": 23830421829.0
+    },
+    {
+      "date": 1774828800,
+      "tvl": 23808524852.0
+    },
+    {
+      "date": 1774915200,
+      "tvl": 23511492031.0
+    },
+    {
+      "date": 1775001600,
+      "tvl": 24306068177.0
+    },
+    {
+      "date": 1775088000,
+      "tvl": 24315025372.0
+    },
+    {
+      "date": 1775174400,
+      "tvl": 23814416499.0
+    },
+    {
+      "date": 1775260800,
+      "tvl": 23991601798.0
+    },
+    {
+      "date": 1775347200,
+      "tvl": 24164001360.0
+    },
+    {
+      "date": 1775433600,
+      "tvl": 24595546740.0
+    },
+    {
+      "date": 1775520000,
+      "tvl": 24224311448.0
+    },
+    {
+      "date": 1775606400,
+      "tvl": 25282726431.0
+    },
+    {
+      "date": 1775692800,
+      "tvl": 24821181992.0
+    },
+    {
+      "date": 1775779200,
+      "tvl": 25140216013.0
+    },
+    {
+      "date": 1775865600,
+      "tvl": 25578995651.0
+    },
+    {
+      "date": 1775952000,
+      "tvl": 25847132700.0
+    },
+    {
+      "date": 1776038400,
+      "tvl": 25220185804.0
+    },
+    {
+      "date": 1776124800,
+      "tvl": 26488787884.0
+    },
+    {
+      "date": 1776211200,
+      "tvl": 26341030615.0
+    },
+    {
+      "date": 1776297600,
+      "tvl": 26382838416.0
+    },
+    {
+      "date": 1776384000,
+      "tvl": 26106373309.0
+    },
+    {
+      "date": 1776470400,
+      "tvl": 26395728207.0
+    },
+    {
+      "date": 1776556800,
+      "tvl": 21965604604.0
+    },
+    {
+      "date": 1776643200,
+      "tvl": 17947003759.0
+    },
+    {
+      "date": 1776729600,
+      "tvl": 16594352734.0
+    },
+    {
+      "date": 1776816000,
+      "tvl": 15632525100.0
+    },
+    {
+      "date": 1776902400,
+      "tvl": 15276279154.0
+    },
+    {
+      "date": 1776988800,
+      "tvl": 14324824329.0
+    },
+    {
+      "date": 1777075200,
+      "tvl": 14316671757.0
+    },
+    {
+      "date": 1777123331,
+      "tvl": 14147362793.0
+    }
+  ],
+  "tvl_usd": 14147362796.561316,
+  "type": "protocol"
+}

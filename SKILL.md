@@ -44,7 +44,7 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
 ## Phase 1: Data Collection
 
 - Trigger `scripts/defi_llama_fetcher.py` to collect real metrics where applicable.
-- Read generated data from `workspace/{protocol_name}/data.json`.
+- Read generated data from `workspace/{protocol_name}/{protocol_name}_data.json`.
 - Collect only verifiable data, including:
   - TVL.
   - Fees.
@@ -92,7 +92,9 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
 
 ## Phase 4: Report Generation
 
-- Fill in `templates/report_template.html` with all gathered data and analysis.
+- Run `scripts/report_generator.py {protocol_name}` to render the report.
+- The script generates `workspace/{protocol_name}/report_data.js` containing the entire `window.REPORT_DATA` object, then copies `templates/report_template.html` into `workspace/{protocol_name}/{protocol_name}_report.html` and injects `<script src="report_data.js"></script>` before `</body>`.
+- `templates/report_template.html` is a static file: never edit it from the agent. Only `report_data.js` is generated per protocol.
 - Save final protocol outputs under `workspace/{protocol_name}/`.
 - Ensure the final report includes:
   - Topic and scope.
