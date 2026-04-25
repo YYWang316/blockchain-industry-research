@@ -43,7 +43,8 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
 
 ## Phase 1: Data Collection
 
-- Trigger `defi_llama_fetcher.py` to collect real metrics where applicable.
+- Trigger `scripts/defi_llama_fetcher.py` to collect real metrics where applicable.
+- Read generated data from `workspace/{protocol_name}/data.json`.
 - Collect only verifiable data, including:
   - TVL.
   - Fees.
@@ -51,7 +52,7 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
   - Volume, if available.
   - Chain-level or protocol-level activity metrics, if available.
   - Comparable protocol metrics for market context, if available.
-- If `defi_llama_fetcher.py` fails, returns partial data, or does not support the topic:
+- If `scripts/defi_llama_fetcher.py` fails, returns partial data, or does not support the topic:
   - Mark missing fields as `[DATA_UNAVAILABLE]`.
   - Do not estimate, infer, interpolate, or fabricate numbers.
   - State the data limitation clearly in the report.
@@ -59,7 +60,7 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
 
 ## Phase 2: Supply Chain Mapping
 
-- Trigger the `upstream_downstream.md` sub-agent.
+- Trigger the `agents/upstream_downstream.md` sub-agent.
 - Map upstream dependencies by asking what physical, infrastructure, and protocol layers the topic depends on.
 - For each upstream dependency, include:
   - The dependency.
@@ -91,7 +92,8 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
 
 ## Phase 4: Report Generation
 
-- Fill in `report_template.md` with all gathered data and analysis.
+- Fill in `templates/report_template.html` with all gathered data and analysis.
+- Save final protocol outputs under `workspace/{protocol_name}/`.
 - Ensure the final report includes:
   - Topic and scope.
   - Relevant Atoms to Bits layers.
@@ -101,7 +103,7 @@ The core framework is **Atoms to Bits**: a 7-layer stack that connects Layer 0 p
   - Narrative and competitive context.
   - Key risks and bottlenecks.
   - Supply chain-specific conclusion.
-- Output the final report as Markdown.
+- Output the final report as HTML.
 - Before finalizing, verify:
   - No fabricated numbers appear in the report.
   - Every upstream dependency has a reasoning chain.

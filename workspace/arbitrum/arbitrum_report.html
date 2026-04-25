@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arbitrum — Supply Chain Research Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg: #0f0f0f;
+        --panel: #151719;
+        --panel-2: #101d26;
+        --line: rgba(0, 170, 255, 0.28);
+        --line-strong: rgba(0, 170, 255, 0.72);
+        --blue: #00aaff;
+        --blue-soft: rgba(0, 170, 255, 0.14);
+        --text: #e8f4fb;
+        --muted: #8fa7b5;
+        --warn: #f4c542;
+        --danger: #ff5f6d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(0, 170, 255, 0.18), transparent 32rem),
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          var(--bg);
+        background-size: auto, 36px 36px, 36px 36px, auto;
+        color: var(--text);
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        line-height: 1.6;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 56px;
+      }
+
+      .terminal-frame {
+        border: 1px solid var(--line);
+        background: rgba(10, 12, 14, 0.82);
+        box-shadow: 0 0 48px rgba(0, 170, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--line);
+        background: linear-gradient(90deg, rgba(0, 170, 255, 0.14), transparent);
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .status-light {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-right: 8px;
+        border-radius: 50%;
+        background: var(--blue);
+        box-shadow: 0 0 14px var(--blue);
+      }
+
+      header {
+        padding: 44px 40px 28px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        margin: 14px 0 18px;
+        max-width: 920px;
+        font-size: clamp(36px, 6vw, 68px);
+        line-height: 0.98;
+        letter-spacing: -0.06em;
+      }
+
+      h2 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        color: var(--blue);
+        font-size: 18px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h2::before {
+        content: "";
+        display: block;
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--blue);
+        background: var(--blue-soft);
+      }
+
+      h3 {
+        color: var(--text);
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--blue-soft);
+        color: var(--text);
+        padding: 8px 10px;
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      main {
+        padding: 32px 40px 40px;
+      }
+
+      section {
+        margin-bottom: 28px;
+        padding: 24px;
+        border: 1px solid rgba(0, 170, 255, 0.2);
+        background: linear-gradient(135deg, rgba(21, 23, 25, 0.96), rgba(11, 18, 22, 0.96));
+      }
+
+      .section-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 18px;
+      }
+
+      .span-7 {
+        grid-column: span 7;
+      }
+
+      .span-5 {
+        grid-column: span 5;
+      }
+
+      .span-6 {
+        grid-column: span 6;
+      }
+
+      .span-12 {
+        grid-column: span 12;
+      }
+
+      .tldr {
+        color: #d9f5ff;
+        font-size: 17px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+      }
+
+      th,
+      td {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(0, 170, 255, 0.18);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: rgba(0, 170, 255, 0.14);
+        color: var(--blue);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      td:first-child {
+        width: 36%;
+        color: var(--muted);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .layer-card {
+        display: grid;
+        grid-template-columns: 112px 1fr;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .layer-number {
+        display: grid;
+        place-items: center;
+        height: 112px;
+        border: 1px solid var(--line-strong);
+        background: radial-gradient(circle, rgba(0, 170, 255, 0.26), rgba(0, 170, 255, 0.05));
+        color: var(--blue);
+        font-size: 52px;
+        font-weight: 800;
+        box-shadow: inset 0 0 24px rgba(0, 170, 255, 0.12);
+      }
+
+      .styled-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .styled-list li,
+      .styled-list > * {
+        margin-bottom: 12px;
+        padding: 14px 16px;
+        border-left: 3px solid var(--blue);
+        background: rgba(0, 170, 255, 0.07);
+      }
+
+      .callout {
+        padding: 20px;
+        border: 1px solid rgba(244, 197, 66, 0.55);
+        background: linear-gradient(135deg, rgba(244, 197, 66, 0.12), rgba(0, 170, 255, 0.06));
+        box-shadow: inset 0 0 28px rgba(244, 197, 66, 0.05);
+      }
+
+      .callout strong {
+        color: var(--warn);
+      }
+
+      .risk-panel {
+        display: grid;
+        gap: 16px;
+      }
+
+      .risk-score {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        color: var(--blue);
+      }
+
+      .risk-score .score {
+        font-size: 54px;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .risk-bar {
+        position: relative;
+        height: 18px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        background: linear-gradient(90deg, rgba(0, 170, 255, 0.14), rgba(255, 95, 109, 0.16));
+      }
+
+      .risk-bar-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--blue), var(--danger));
+        box-shadow: 0 0 18px rgba(0, 170, 255, 0.45);
+      }
+
+      .risk-labels {
+        display: flex;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      .key-insight {
+        border-color: var(--line-strong);
+        background:
+          linear-gradient(135deg, rgba(0, 170, 255, 0.16), rgba(15, 15, 15, 0.92)),
+          var(--panel);
+      }
+
+      .key-insight p,
+      .key-insight {
+        font-size: 18px;
+      }
+
+      .hook-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .hook-card {
+        min-height: 170px;
+        padding: 18px;
+        border: 1px dashed var(--line-strong);
+        background: rgba(0, 170, 255, 0.07);
+      }
+
+      .hook-card .label {
+        margin-bottom: 12px;
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      footer {
+        padding: 18px 40px 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+        text-align: center;
+      }
+
+      .data-unavailable { color: var(--muted); font-style: italic; }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      @media (max-width: 860px) {
+        header,
+        main,
+        footer {
+          padding-left: 20px;
+          padding-right: 20px;
+        }
+
+        .span-7,
+        .span-5,
+        .span-6,
+        .span-12 {
+          grid-column: span 12;
+        }
+
+        .layer-card {
+          grid-template-columns: 1fr;
+        }
+
+        .hook-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <article class="terminal-frame">
+        <div class="topbar">
+          <div><span class="status-light"></span>YYFoundry Research Terminal</div>
+          <div>Bit != Coin</div>
+        </div>
+
+        <header>
+          <div class="eyebrow">Atoms to Bits Framework</div>
+          <h1>Arbitrum Supply Chain Research Report</h1>
+          <div class="meta-row">
+            <span class="chip">Protocol: Arbitrum</span>
+            <span class="chip">Report Date: 2026-04-25</span>
+            <span class="chip">Industrial Crypto Analysis</span>
+          </div>
+        </header>
+
+        <main>
+          <section id="tldr">
+            <h2>TL;DR</h2>
+            <p class="tldr">Arbitrum: supply chain analysis is disabled until you set ANTHROPIC_API_KEY in the project .env. Data below is from DeFi Llama only. A technology suite designed to scale Ethereum.</p>
+          </section>
+
+          <div class="section-grid">
+            <section id="basic-metrics" class="span-7">
+              <h2>Basic Metrics</h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Current TVL</td><td>$0</td></tr>
+                  <tr><td>30-Day TVL Change</td><td><span class="data-unavailable">[DATA_UNAVAILABLE]</span></td></tr>
+                  <tr><td>Category</td><td>Canonical Bridge</td></tr>
+                  <tr><td>Primary Chains</td><td>Arbitrum</td></tr>
+                  <tr><td>Daily Fees</td><td>$10,825</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section id="layer-classification" class="span-5">
+              <h2>Layer Classification</h2>
+              <div class="layer-card">
+                <div class="layer-number">2</div>
+                <div>
+                  <h3>Stack Position</h3>
+                  <p>Set ANTHROPIC_API_KEY to generate protocol-specific stack text from the upstream_downstream agent.</p>
+                </div>
+              </div>
+            </section>
+
+            <section id="upstream-dependencies" class="span-6">
+              <h2>Upstream Dependencies</h2>
+              <div class="styled-list">
+                <span class="data-unavailable">[DATA_UNAVAILABLE]</span>
+              </div>
+            </section>
+
+            <section id="hidden-dependency" class="span-6">
+              <h2>Hidden Dependency Spotlight</h2>
+              <div class="callout">
+                <strong>Non-obvious constraint:</strong>
+                <p>[DATA_UNAVAILABLE] — set ANTHROPIC_API_KEY to run the supply-chain sub-agent; do not guess suppliers or operator locations.</p>
+              </div>
+            </section>
+
+            <section id="downstream-dependents" class="span-6">
+              <h2>Downstream Dependents</h2>
+              <div class="styled-list">
+                <span class="data-unavailable">[DATA_UNAVAILABLE]</span>
+              </div>
+            </section>
+
+            <section id="risk" class="span-6">
+              <h2>Supply Chain Risk</h2>
+              <div class="risk-panel">
+                <div class="risk-score">
+                  <span class="score">[DATA_UNAVAILABLE]</span>
+                  <span>/10</span>
+                </div>
+                <div class="risk-bar" aria-label="Supply chain risk score">
+                  <div class="risk-bar-fill"></div>
+                </div>
+                <div class="risk-labels">
+                  <span>Redundant</span>
+                  <span>Fragile</span>
+                </div>
+                <p><strong>Primary Risk:</strong> [DATA_UNAVAILABLE] — risk scoring is produced by the agent pass.</p>
+                <p><strong>Reasoning:</strong> Add ANTHROPIC_API_KEY to .env to compute supply chain risk with reasoning tied to the fetched metrics.</p>
+              </div>
+            </section>
+
+            <section id="comparables" class="span-12">
+              <h2>Comparable Protocols</h2>
+              <table><thead><tr><th>Protocol</th><th>Slug</th><th>TVL</th><th>Chains</th></tr></thead><tbody><tr><td>Arbitrum Bridge</td><td>arbitrum-bridge</td><td>$3,485,390,283</td><td>Ethereum</td></tr><tr><td>Base Bridge</td><td>base-bridge</td><td>$2,781,616,583</td><td>Ethereum</td></tr><tr><td>Optimism Bridge</td><td>optimism-bridge</td><td>$528,689,861</td><td>Ethereum, Base, PGN</td></tr><tr><td>Linea Bridge</td><td>linea-bridge</td><td>$391,150,399</td><td>Ethereum</td></tr><tr><td>B2 Buzz</td><td>b2-buzz</td><td>$291,413,709</td><td>Bitcoin, Ethereum, Polygon, Binance</td></tr><tr><td>xDAI Stake Bridge</td><td>xdai-stake-bridge</td><td>$286,073,305</td><td>Ethereum</td></tr><tr><td>Mantle Bridge</td><td>mantle-bridge</td><td>$260,534,849</td><td>Ethereum</td></tr><tr><td>World Chain</td><td>world-chain</td><td>$252,181,806</td><td>Ethereum</td></tr><tr><td>Starknet Bridge</td><td>starknet-bridge</td><td>$218,530,491</td><td>Ethereum</td></tr><tr><td>zkSync Era txBridge</td><td>zksync-era-txbridge</td><td>$146,246,884</td><td>Ethereum</td></tr></tbody></table>
+            </section>
+
+            <section id="key-insight" class="span-12 key-insight">
+              <h2>Key Insight: YYFoundry Angle</h2>
+              <p>[DATA_UNAVAILABLE] — full YYFoundry angle requires the Claude pass; narrative-only insights would risk sounding authoritative without the structured dependency pass.</p>
+              <p class="muted">This is the non-obvious observation that the supply chain lens reveals — what general crypto research misses.</p>
+            </section>
+
+            <section id="content-hooks" class="span-12">
+              <h2>Content Hooks</h2>
+              <div class="hook-grid">
+                <div class="hook-card">
+                  <div class="label">Video Hook</div>
+                  <p>Set your API key — then we can narrate Arbitrum from Layer 0 to Layer 6.</p>
+                </div>
+                <div class="hook-card">
+                  <div class="label">Substack Angle</div>
+                  <p>DeFi Llama data for Arbitrum is in workspace/arbitrum/data.json; the missing piece is the Atoms to Bits write-up (API key).</p>
+                </div>
+                <div class="hook-card">
+                  <div class="label">X Thread Opener</div>
+                  <p>Arbitrum on paper vs Arbitrum in the supply stack — thread starts after the agent runs (ANTHROPIC_API_KEY).</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+
+        <footer>
+          Data sourced from DefiLlama API · YYFoundry Atoms to Bits Framework
+        </footer>
+      </article>
+    </div>
+  </body>
+</html>

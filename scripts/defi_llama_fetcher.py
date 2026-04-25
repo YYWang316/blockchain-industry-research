@@ -231,7 +231,9 @@ def build_protocol_result(protocol_slug: str) -> dict[str, Any]:
 
 
 def save_result(protocol_slug: str, result: dict[str, Any]) -> Path:
-    output_path = Path(f"{protocol_slug}_data.json")
+    output_dir = Path("workspace") / protocol_slug
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / "data.json"
     output_path.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
     return output_path
 
