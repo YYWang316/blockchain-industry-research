@@ -1,507 +1,1552 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{PROTOCOL_NAME}} — Supply Chain Research Report</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YYFoundry Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400&family=Geist:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        --bg: #0f0f0f;
-        --panel: #151719;
-        --panel-2: #101d26;
-        --line: rgba(0, 170, 255, 0.28);
-        --line-strong: rgba(0, 170, 255, 0.72);
-        --blue: #00aaff;
-        --blue-soft: rgba(0, 170, 255, 0.14);
-        --text: #e8f4fb;
-        --muted: #8fa7b5;
-        --warn: #f4c542;
-        --danger: #ff5f6d;
+        --bg: #f6f4ef;
+        --paper: #fbfaf6;
+        --surface: #efece3;
+        --ink: #18170f;
+        --muted: #6b6658;
+        --line: #d9d4c5;
+        --accent: #1a3a3a;
+        --accent2: #c2410c;
+        --accent3: #7a6a3a;
+        --accent4: #3a5a8c;
+        --accent5: #8c3a5a;
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      *,
+      *::before,
+      *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      body {
-        margin: 0;
-        background:
-          radial-gradient(circle at top left, rgba(0, 170, 255, 0.18), transparent 32rem),
-          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-          var(--bg);
-        background-size: auto, 36px 36px, 36px 36px, auto;
-        color: var(--text);
-        font-family: "JetBrains Mono", "Courier New", monospace;
+      html, body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Newsreader", "Georgia", serif;
+        font-size: 17px;
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
       }
 
-      .shell {
-        width: min(1180px, calc(100% - 32px));
+      body { padding: 32px 0 48px; }
+
+      /* ===== page shell ===== */
+      .page {
+        max-width: 880px;
         margin: 0 auto;
-        padding: 40px 0 56px;
+        background: var(--paper);
+        border: 0.5px solid var(--line);
       }
 
-      .terminal-frame {
-        border: 1px solid var(--line);
-        background: rgba(10, 12, 14, 0.82);
-        box-shadow: 0 0 48px rgba(0, 170, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
-      }
-
-      .topbar {
+      /* ===== running header ===== */
+      .running-header {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
         gap: 16px;
-        padding: 14px 18px;
-        border-bottom: 1px solid var(--line);
-        background: linear-gradient(90deg, rgba(0, 170, 255, 0.14), transparent);
+        padding: 16px 72px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
         color: var(--muted);
-        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        border-bottom: 0.5px solid var(--line);
+        background: var(--paper);
+      }
+      .running-header .brand { color: var(--ink); font-weight: 500; }
+      .running-header .kicker-mid { color: var(--muted); }
+      .running-header .running-date { color: var(--ink); }
+
+      /* ===== generic typography ===== */
+      .section {
+        position: relative;
+        padding: 56px 72px;
+        border-top: 0.5px solid var(--line);
+      }
+      .section:first-of-type { border-top: none; }
+
+      .kicker {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--accent2);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .kicker.ink { color: var(--ink); }
+      .kicker.accent { color: var(--accent); }
+
+      h1.display {
+        font-family: "Newsreader", serif;
+        font-weight: 400;
+        font-size: 56px;
+        line-height: 1.05;
+        letter-spacing: -0.025em;
+        color: var(--ink);
+      }
+      h2.section-h2 {
+        font-family: "Newsreader", serif;
+        font-weight: 400;
+        font-size: 32px;
+        line-height: 1.18;
+        letter-spacing: -0.012em;
+        color: var(--ink);
+        border-top: 1px solid var(--ink);
+        padding-top: 20px;
+        margin-top: 4px;
+      }
+      .lede {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-weight: 400;
+        font-size: 19px;
+        line-height: 1.5;
+        color: var(--muted);
+        margin-top: 14px;
+      }
+      .sub-lede {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1.5;
+        color: var(--muted);
+        margin-top: 12px;
+        margin-bottom: 28px;
+        max-width: 60ch;
+      }
+      .caption,
+      .source-line {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9.5px;
+        color: var(--muted);
         letter-spacing: 0.12em;
         text-transform: uppercase;
+        margin-top: 18px;
+      }
+      .source-line.bottom { margin-top: 32px; }
+
+      .null-val {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        color: var(--muted);
       }
 
-      .status-light {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        margin-right: 8px;
-        border-radius: 50%;
-        background: var(--blue);
-        box-shadow: 0 0 14px var(--blue);
+      /* ===== data missing banner ===== */
+      .data-banner {
+        max-width: 880px;
+        margin: 0 auto 24px;
+        background: var(--accent2);
+        color: #fbfaf6;
+        font-family: "Geist", sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 14px 24px;
+        letter-spacing: 0.02em;
       }
 
-      header {
-        padding: 44px 40px 28px;
-        border-bottom: 1px solid var(--line);
+      /* ===== Section 1: Cover ===== */
+      .cover-grid {
+        display: grid;
+        grid-template-columns: 58fr 42fr;
+        position: relative;
+        gap: 0;
       }
-
-      .eyebrow {
-        color: var(--blue);
-        font-size: 13px;
-        font-weight: 700;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-      }
-
-      h1,
-      h2,
-      h3,
-      p {
-        margin-top: 0;
-      }
-
-      h1 {
-        margin: 14px 0 18px;
-        max-width: 920px;
-        font-size: clamp(36px, 6vw, 68px);
-        line-height: 0.98;
-        letter-spacing: -0.06em;
-      }
-
-      h2 {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        color: var(--blue);
-        font-size: 18px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      h2::before {
+      .cover-grid::before {
         content: "";
-        display: block;
-        width: 16px;
-        height: 16px;
-        border: 1px solid var(--blue);
-        background: var(--blue-soft);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 58%;
+        width: 0.5px;
+        background: var(--line);
       }
-
-      h3 {
-        color: var(--text);
-        font-size: 15px;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+      .cover-left { padding-right: 36px; }
+      .cover-right { padding-left: 36px; }
+      .protocol-name {
+        margin-top: 16px;
       }
-
-      .meta-row {
+      .chips {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 6px;
+        margin-top: 28px;
       }
-
       .chip {
-        border: 1px solid var(--line);
-        background: var(--blue-soft);
-        color: var(--text);
-        padding: 8px 10px;
-        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--ink);
+        background: var(--surface);
+        border: 0.5px solid var(--line);
+        padding: 4px 10px;
+        letter-spacing: 0.06em;
+      }
+      .chip.muted { color: var(--muted); }
+
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .kpi-card {
+        background: var(--surface);
+        border: 0.5px solid var(--line);
+        padding: 16px 18px;
+        min-height: 110px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .kpi-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
         text-transform: uppercase;
       }
+      .kpi-value {
+        font-family: "Geist", sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.1;
+        margin-top: 12px;
+        word-break: break-word;
+      }
+      .kpi-delta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        margin-top: 6px;
+        letter-spacing: 0.04em;
+      }
+      .delta-up { color: var(--accent); }
+      .delta-down { color: var(--accent2); }
+      .delta-flat { color: var(--muted); }
 
-      main {
-        padding: 32px 40px 40px;
+      /* ===== Section 2: TL;DR ===== */
+      .section-tldr {
+        background: var(--surface);
+        border-left: 3px solid var(--accent);
+        padding: 32px 40px;
+      }
+      .tldr-text {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-size: 19px;
+        line-height: 1.5;
+        color: var(--ink);
+        margin-top: 8px;
       }
 
-      section {
-        margin-bottom: 28px;
-        padding: 24px;
-        border: 1px solid rgba(0, 170, 255, 0.2);
-        background: linear-gradient(135deg, rgba(21, 23, 25, 0.96), rgba(11, 18, 22, 0.96));
-      }
-
-      .section-grid {
+      /* ===== Section 3: metrics + layer ===== */
+      .cols {
         display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        gap: 18px;
+        gap: 0;
+        position: relative;
       }
-
-      .span-7 {
-        grid-column: span 7;
+      .cols::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0.5px;
+        background: var(--line);
       }
+      .cols-55-45 { grid-template-columns: 55fr 45fr; }
+      .cols-55-45::before { left: 55%; }
+      .cols-50-50 { grid-template-columns: 1fr 1fr; }
+      .cols-50-50::before { left: 50%; }
+      .col { padding: 0 32px; }
+      .cols .col:first-child { padding-left: 0; }
+      .cols .col:last-child { padding-right: 0; }
 
-      .span-5 {
-        grid-column: span 5;
-      }
-
-      .span-6 {
-        grid-column: span 6;
-      }
-
-      .span-12 {
-        grid-column: span 12;
-      }
-
-      .tldr {
-        color: #d9f5ff;
-        font-size: 17px;
-      }
-
-      table {
+      .metrics-table {
         width: 100%;
         border-collapse: collapse;
-        overflow: hidden;
-        border: 1px solid var(--line);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
       }
-
-      th,
-      td {
-        padding: 14px 16px;
-        border-bottom: 1px solid rgba(0, 170, 255, 0.18);
+      .metrics-table thead th {
         text-align: left;
-        vertical-align: top;
-      }
-
-      th {
-        background: rgba(0, 170, 255, 0.14);
-        color: var(--blue);
-        font-size: 12px;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-      }
-
-      td:first-child {
-        width: 36%;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
         color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 10px 12px;
+        border-top: 1px solid var(--ink);
+        border-bottom: 1px solid var(--ink);
+        font-weight: 500;
+      }
+      .metrics-table thead th:last-child { text-align: right; }
+      .metrics-table tbody td {
+        padding: 10px 12px;
+        border-bottom: 0.5px solid var(--line);
+        color: var(--ink);
+      }
+      .metrics-table tbody td:first-child {
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        width: 45%;
+      }
+      .metrics-table tbody td:last-child {
+        text-align: right;
       }
 
-      tr:last-child td {
-        border-bottom: 0;
-      }
-
-      .layer-card {
-        display: grid;
-        grid-template-columns: 112px 1fr;
-        gap: 18px;
-        align-items: center;
-      }
-
-      .layer-number {
-        display: grid;
-        place-items: center;
-        height: 112px;
-        border: 1px solid var(--line-strong);
-        background: radial-gradient(circle, rgba(0, 170, 255, 0.26), rgba(0, 170, 255, 0.05));
-        color: var(--blue);
-        font-size: 52px;
-        font-weight: 800;
-        box-shadow: inset 0 0 24px rgba(0, 170, 255, 0.12);
-      }
-
-      .styled-list {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .styled-list li,
-      .styled-list > * {
-        margin-bottom: 12px;
-        padding: 14px 16px;
-        border-left: 3px solid var(--blue);
-        background: rgba(0, 170, 255, 0.07);
-      }
-
-      .callout {
-        padding: 20px;
-        border: 1px solid rgba(244, 197, 66, 0.55);
-        background: linear-gradient(135deg, rgba(244, 197, 66, 0.12), rgba(0, 170, 255, 0.06));
-        box-shadow: inset 0 0 28px rgba(244, 197, 66, 0.05);
-      }
-
-      .callout strong {
-        color: var(--warn);
-      }
-
-      .risk-panel {
-        display: grid;
-        gap: 16px;
-      }
-
-      .risk-score {
+      .layer-display {
         display: flex;
         align-items: baseline;
-        gap: 10px;
-        color: var(--blue);
+        gap: 8px;
+        margin-top: 8px;
       }
-
-      .risk-score .score {
-        font-size: 54px;
-        font-weight: 800;
+      .layer-num {
+        font-family: "Newsreader", serif;
+        font-size: 112px;
+        font-weight: 400;
         line-height: 1;
+        letter-spacing: -0.05em;
+        color: var(--ink);
       }
-
-      .risk-bar {
-        position: relative;
-        height: 18px;
-        overflow: hidden;
-        border: 1px solid var(--line);
-        background: linear-gradient(90deg, rgba(0, 170, 255, 0.14), rgba(255, 95, 109, 0.16));
-      }
-
-      .risk-bar-fill {
-        width: {{RISK_BAR_PCT}}%;
-        height: 100%;
-        background: linear-gradient(90deg, var(--blue), var(--danger));
-        box-shadow: 0 0 18px rgba(0, 170, 255, 0.45);
-      }
-
-      .risk-labels {
-        display: flex;
-        justify-content: space-between;
-        color: var(--muted);
+      .layer-prefix {
+        font-family: "JetBrains Mono", monospace;
         font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.16em;
         text-transform: uppercase;
+        align-self: flex-start;
+        margin-top: 16px;
+      }
+      .layer-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-top: 4px;
+        margin-bottom: 18px;
+      }
+      .layer-desc {
+        font-family: "Newsreader", serif;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink);
+      }
+      .thin-rule {
+        border: none;
+        border-top: 0.5px solid var(--line);
+        margin-top: 24px;
       }
 
-      .key-insight {
-        border-color: var(--line-strong);
-        background:
-          linear-gradient(135deg, rgba(0, 170, 255, 0.16), rgba(15, 15, 15, 0.92)),
-          var(--panel);
+      /* ===== Section 4: TVL chart ===== */
+      .chart-wrap {
+        margin-top: 8px;
+      }
+      .chart-wrap svg { display: block; width: 100%; height: auto; }
+      svg .axis-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9.5px;
+        fill: var(--muted);
+        letter-spacing: 0.05em;
+      }
+      svg .axis-label.y { font-size: 9px; }
+      .tooltip {
+        position: absolute;
+        pointer-events: none;
+        background: var(--surface);
+        border: 0.5px solid var(--line);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--ink);
+        padding: 6px 10px;
+        opacity: 0;
+        transition: opacity 0.12s;
+        white-space: nowrap;
+        z-index: 10;
       }
 
-      .key-insight p,
-      .key-insight {
-        font-size: 18px;
-      }
-
-      .hook-grid {
+      /* ===== Section 5: Supply Chain Map ===== */
+      .scm-cols {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        position: relative;
+        margin-top: 4px;
+      }
+      .scm-cols::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 0.5px;
+        background: var(--line);
+      }
+      .scm-col { padding: 0 24px; }
+      .scm-col:first-child { padding-left: 0; }
+      .scm-col:last-child { padding-right: 0; }
+      .sub-kicker {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--ink);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+        font-weight: 500;
+      }
+      .scm-card {
+        background: var(--surface);
+        border-left: 2px solid var(--accent);
+        padding: 16px 20px;
+        margin-bottom: 8px;
+      }
+      .scm-card.downstream {
+        border-left-color: var(--accent4);
+      }
+      .scm-card .row1 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .scm-card .row1 .layer-tag {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
+      }
+      .badge {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        letter-spacing: 0.16em;
+        padding: 2px 8px;
+        color: #fbfaf6;
+        border-radius: 1px;
+      }
+      .badge.high { background: var(--accent2); }
+      .badge.med  { background: var(--accent3); }
+      .badge.low  { background: var(--accent); }
+      .scm-card .name {
+        font-family: "Geist", sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: var(--ink);
+        line-height: 1.35;
+      }
+      .scm-card.downstream .row1 .name { flex: 1; }
+      .scm-card .dep-type {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.06em;
+        margin-top: 6px;
+      }
+      .scm-card .analogy {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .scm-card .impact {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .scm-card .notes {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.04em;
+        margin-top: 8px;
+      }
+
+      .hidden-callout {
+        background: var(--surface);
+        border-left: 3px solid var(--accent2);
+        padding: 24px 32px;
+        margin-top: 24px;
+      }
+      .hidden-callout .kicker {
+        color: var(--accent2);
+        margin-bottom: 8px;
+      }
+      .hidden-callout p {
+        font-family: "Newsreader", serif;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink);
+      }
+
+      /* ===== Section 6: Findings ===== */
+      .findings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 16px;
       }
-
-      .hook-card {
-        min-height: 170px;
-        padding: 18px;
-        border: 1px dashed var(--line-strong);
-        background: rgba(0, 170, 255, 0.07);
+      .finding-card {
+        background: var(--surface);
+        border-top: 2px solid var(--ink);
+        padding: 24px;
+      }
+      .finding-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        letter-spacing: 0.16em;
+        margin-bottom: 12px;
+      }
+      .finding-heading {
+        font-family: "Newsreader", serif;
+        font-size: 19px;
+        font-weight: 500;
+        line-height: 1.3;
+        color: var(--ink);
+        margin-bottom: 12px;
+      }
+      .finding-body {
+        font-family: "Geist", sans-serif;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--muted);
       }
 
-      .hook-card .label {
-        margin-bottom: 12px;
-        color: var(--blue);
+      /* ===== Section 7: Competitive Matrix ===== */
+      .matrix-wrap {
+        margin-top: 8px;
+        background: var(--paper);
+      }
+      .matrix-wrap svg { display: block; width: 100%; height: auto; }
+      svg .matrix-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        fill: var(--ink);
+      }
+      svg .matrix-name.current { font-weight: 700; }
+      svg .matrix-tvl {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        fill: var(--muted);
+      }
+      svg .matrix-fees {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        fill: var(--muted);
+      }
+      svg .matrix-row-bg {
+        fill: transparent;
+        transition: fill 0.12s;
+      }
+      svg .matrix-row:hover .matrix-row-bg { fill: var(--surface); }
+
+      /* ===== Section 8: Risk + Insight ===== */
+      .risk-display {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 12px;
+        margin-bottom: 16px;
+      }
+      .risk-score {
+        font-family: "Newsreader", serif;
+        font-size: 112px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+      }
+      .risk-suffix {
+        font-family: "Newsreader", serif;
+        font-size: 32px;
+        color: var(--muted);
+      }
+      .risk-bar-track {
+        width: 100%;
+        height: 8px;
+        background: var(--line);
+        position: relative;
+      }
+      .risk-bar-fill {
+        height: 100%;
+        background: var(--accent);
+        width: 0%;
+        transition: width 0.4s ease;
+      }
+      .risk-bar-fill.fragile {
+        background: var(--accent2);
+      }
+      .risk-axis {
+        display: flex;
+        justify-content: space-between;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9px;
+        color: var(--muted);
+        letter-spacing: 0.18em;
+        margin-top: 6px;
+      }
+      .risk-primary {
+        font-family: "Newsreader", serif;
+        font-size: 17px;
+        line-height: 1.55;
+        color: var(--ink);
+        margin-top: 24px;
+      }
+      .risk-reasoning {
+        font-family: "Geist", sans-serif;
+        font-size: 13.5px;
+        line-height: 1.55;
+        color: var(--muted);
+        margin-top: 14px;
+      }
+
+      .insight-callout {
+        background: var(--surface);
+        border-left: 3px solid var(--accent);
+        padding: 24px;
+      }
+      .insight-callout p {
+        font-family: "Newsreader", serif;
+        font-style: italic;
+        font-size: 17px;
+        line-height: 1.65;
+        color: var(--ink);
+      }
+
+      /* ===== Section 9: Hooks ===== */
+      .hooks-cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0;
+        position: relative;
+        margin-top: 8px;
+      }
+      .hooks-cols::before,
+      .hooks-cols::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0.5px;
+        background: var(--line);
+      }
+      .hooks-cols::before { left: 33.333%; }
+      .hooks-cols::after { left: 66.666%; }
+      .hook-col { padding: 0 24px; }
+      .hook-col:first-child { padding-left: 0; }
+      .hook-col:last-child { padding-right: 0; }
+      .hook-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--accent2);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .hook-text {
+        font-family: "Newsreader", serif;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--ink);
+        min-height: 100px;
+      }
+      .copy-btn {
+        font-family: "Geist", sans-serif;
         font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.12em;
+        color: var(--ink);
+        background: var(--surface);
+        border: 0.5px solid var(--line);
+        padding: 6px 14px;
+        margin-top: 16px;
+        cursor: pointer;
+        letter-spacing: 0.04em;
+        transition: all 0.15s ease;
+      }
+      .copy-btn:hover {
+        border-color: var(--ink);
+      }
+      .copy-btn.is-copied {
+        background: var(--accent);
+        color: var(--paper);
+        border-color: var(--accent);
+      }
+
+      /* ===== Footer ===== */
+      .report-footer {
+        border-top: 0.5px solid var(--line);
+        padding: 24px 72px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 9.5px;
+        color: var(--muted);
+        letter-spacing: 0.16em;
+        text-align: center;
         text-transform: uppercase;
       }
 
-      footer {
-        padding: 18px 40px 24px;
-        border-top: 1px solid var(--line);
-        color: var(--muted);
-        font-size: 12px;
-        text-align: center;
-      }
-
-      .muted {
-        color: var(--muted);
-      }
-
-      @media (max-width: 860px) {
-        header,
-        main,
-        footer {
-          padding-left: 20px;
-          padding-right: 20px;
-        }
-
-        .span-7,
-        .span-5,
-        .span-6,
-        .span-12 {
-          grid-column: span 12;
-        }
-
-        .layer-card {
-          grid-template-columns: 1fr;
-        }
-
-        .hook-grid {
-          grid-template-columns: 1fr;
-        }
+      /* ===== responsive ===== */
+      @media (max-width: 920px) {
+        body { padding: 0; }
+        .page { border: none; }
+        .section { padding: 40px 32px; }
+        .running-header { padding: 14px 32px; }
+        .report-footer { padding: 24px 32px; }
+        .cover-grid,
+        .cols-55-45,
+        .cols-50-50,
+        .scm-cols,
+        .hooks-cols { grid-template-columns: 1fr; }
+        .cover-grid::before,
+        .cols::before,
+        .scm-cols::before,
+        .hooks-cols::before,
+        .hooks-cols::after { display: none; }
+        .cover-left, .cover-right { padding: 0; }
+        .cover-right { margin-top: 32px; }
+        .col, .scm-col, .hook-col { padding: 24px 0; border-top: 0.5px solid var(--line); }
+        .col:first-child, .scm-col:first-child, .hook-col:first-child { padding-top: 0; border-top: none; }
+        .layer-num { font-size: 88px; }
+        .findings-grid { grid-template-columns: 1fr; }
+        h1.display { font-size: 44px; }
       }
     </style>
   </head>
   <body>
-    <div class="shell">
-      <article class="terminal-frame">
-        <div class="topbar">
-          <div><span class="status-light"></span>YYFoundry Research Terminal</div>
-          <div>Bit != Coin</div>
-        </div>
-
-        <header>
-          <div class="eyebrow">Atoms to Bits Framework</div>
-          <h1>{{PROTOCOL_NAME}} Supply Chain Research Report</h1>
-          <div class="meta-row">
-            <span class="chip">Protocol: {{PROTOCOL_NAME}}</span>
-            <span class="chip">Report Date: {{DATE}}</span>
-            <span class="chip">Industrial Crypto Analysis</span>
-          </div>
-        </header>
-
-        <main>
-          <section id="tldr">
-            <h2>TL;DR</h2>
-            <p class="tldr">{{TLDR}}</p>
-          </section>
-
-          <div class="section-grid">
-            <section id="basic-metrics" class="span-7">
-              <h2>Basic Metrics</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Metric</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td>Current TVL</td><td>{{TVL_USD}}</td></tr>
-                  <tr><td>30-Day TVL Change</td><td>{{TVL_30D_CHANGE}}</td></tr>
-                  <tr><td>Category</td><td>{{CATEGORY}}</td></tr>
-                  <tr><td>Primary Chains</td><td>{{CHAINS}}</td></tr>
-                  <tr><td>Daily Fees</td><td>{{FEES_24H}}</td></tr>
-                </tbody>
-              </table>
-            </section>
-
-            <section id="layer-classification" class="span-5">
-              <h2>Layer Classification</h2>
-              <div class="layer-card">
-                <div class="layer-number">{{LAYER_NUMBER}}</div>
-                <div>
-                  <h3>Stack Position</h3>
-                  <p>{{STACK_DESCRIPTION}}</p>
-                </div>
-              </div>
-            </section>
-
-            <section id="upstream-dependencies" class="span-6">
-              <h2>Upstream Dependencies</h2>
-              <div class="styled-list">
-                {{UPSTREAM_ANALYSIS}}
-              </div>
-            </section>
-
-            <section id="hidden-dependency" class="span-6">
-              <h2>Hidden Dependency Spotlight</h2>
-              <div class="callout">
-                <strong>Non-obvious constraint:</strong>
-                <p>{{HIDDEN_DEPENDENCY_INSIGHT}}</p>
-              </div>
-            </section>
-
-            <section id="downstream-dependents" class="span-6">
-              <h2>Downstream Dependents</h2>
-              <div class="styled-list">
-                {{DOWNSTREAM_ANALYSIS}}
-              </div>
-            </section>
-
-            <section id="risk" class="span-6">
-              <h2>Supply Chain Risk</h2>
-              <div class="risk-panel">
-                <div class="risk-score">
-                  <span class="score">{{RISK_SCORE}}</span>
-                  <span>/10</span>
-                </div>
-                <div class="risk-bar" aria-label="Supply chain risk score">
-                  <div class="risk-bar-fill"></div>
-                </div>
-                <div class="risk-labels">
-                  <span>Redundant</span>
-                  <span>Fragile</span>
-                </div>
-                <p><strong>Primary Risk:</strong> {{PRIMARY_RISK}}</p>
-                <p><strong>Reasoning:</strong> {{RISK_REASONING}}</p>
-              </div>
-            </section>
-
-            <section id="comparables" class="span-12">
-              <h2>Comparable Protocols</h2>
-              {{COMPARABLE_TABLE}}
-            </section>
-
-            <section id="key-insight" class="span-12 key-insight">
-              <h2>Key Insight: YYFoundry Angle</h2>
-              <p>{{KEY_INSIGHT_PARAGRAPH}}</p>
-              <p class="muted">This is the non-obvious observation that the supply chain lens reveals — what general crypto research misses.</p>
-            </section>
-
-            <section id="content-hooks" class="span-12">
-              <h2>Content Hooks</h2>
-              <div class="hook-grid">
-                <div class="hook-card">
-                  <div class="label">Video Hook</div>
-                  <p>{{VIDEO_HOOK}}</p>
-                </div>
-                <div class="hook-card">
-                  <div class="label">Substack Angle</div>
-                  <p>{{SUBSTACK_ANGLE}}</p>
-                </div>
-                <div class="hook-card">
-                  <div class="label">X Thread Opener</div>
-                  <p>{{X_THREAD_OPENER}}</p>
-                </div>
-              </div>
-            </section>
-          </div>
-        </main>
-
-        <footer>
-          Data sourced from DefiLlama API · YYFoundry Atoms to Bits Framework
-        </footer>
-      </article>
+    <div id="data-banner" class="data-banner" hidden>
+      <span>!</span> report_data.js not loaded — populate <code>window.REPORT_DATA</code>.
     </div>
+
+    <div class="page">
+      <header class="running-header">
+        <span class="brand">YYFOUNDRY RESEARCH</span>
+        <span class="kicker-mid" id="running-kicker">ATOMS TO BITS FRAMEWORK</span>
+        <span class="running-date" id="running-date">—</span>
+      </header>
+
+      <!-- ============ § 01 Cover ============ -->
+      <section class="section">
+        <div class="cover-grid">
+          <div class="cover-left">
+            <div class="kicker">YYFOUNDRY RESEARCH · ATOMS TO BITS FRAMEWORK</div>
+            <h1 class="display protocol-name" id="protocol-name">—</h1>
+            <p class="lede" id="protocol-description">—</p>
+            <div class="chips" id="protocol-chips"></div>
+          </div>
+          <div class="cover-right">
+            <div class="kpi-grid" id="kpi-grid"></div>
+          </div>
+        </div>
+        <div class="source-line bottom">
+          SOURCE: DEFI LLAMA API · YYFOUNDRY · BIT != COIN
+        </div>
+      </section>
+
+      <!-- ============ § 02 TL;DR ============ -->
+      <section class="section section-tldr">
+        <div class="kicker accent">TL;DR</div>
+        <p class="tldr-text" id="tldr-text">—</p>
+      </section>
+
+      <!-- ============ § 03 Metrics + Layer ============ -->
+      <section class="section">
+        <div class="cols cols-55-45">
+          <div class="col">
+            <div class="kicker">§ 01 · ON-CHAIN METRICS</div>
+            <h2 class="section-h2">Live Protocol Data.</h2>
+            <p class="sub-lede">Real-time figures sourced from DefiLlama API.</p>
+            <table class="metrics-table">
+              <thead>
+                <tr><th>Metric</th><th>Value</th></tr>
+              </thead>
+              <tbody id="metrics-tbody"></tbody>
+            </table>
+            <div class="caption">TBL. 1.1 · PROTOCOL METRICS · SOURCE: DEFI LLAMA</div>
+          </div>
+          <div class="col">
+            <div class="kicker">§ 02 · LAYER CLASSIFICATION</div>
+            <h2 class="section-h2">Stack Position.</h2>
+            <div class="layer-display">
+              <span class="layer-num" id="layer-num">—</span>
+              <span class="layer-prefix">LAYER</span>
+            </div>
+            <div class="layer-name" id="layer-name">—</div>
+            <p class="layer-desc" id="layer-desc">—</p>
+            <hr class="thin-rule" />
+            <div class="source-line">SOURCE: DEFI LLAMA API · YYFOUNDRY</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ § 04 TVL Chart ============ -->
+      <section class="section">
+        <div class="kicker">§ 03 · TVL TREND</div>
+        <h2 class="section-h2">Thirty-day value locked.</h2>
+        <p class="sub-lede" id="tvl-lede">Daily total value locked over the last thirty trading days.</p>
+        <div class="chart-wrap" style="position: relative;">
+          <svg id="tvl-chart" viewBox="0 0 736 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg>
+          <div id="tvl-tooltip" class="tooltip" role="status"></div>
+        </div>
+        <div class="caption">FIG. 3.1 · TVL 30D · SOURCE: DEFI LLAMA API</div>
+      </section>
+
+      <!-- ============ § 05 Supply Chain Map ============ -->
+      <section class="section">
+        <div class="kicker">§ 04 · SUPPLY CHAIN MAP</div>
+        <h2 class="section-h2">Atoms to Bits dependency trace.</h2>
+        <p class="sub-lede">
+          Trace upstream toward physical infrastructure and downstream into the
+          applications and markets riding on top.
+        </p>
+        <div class="scm-cols">
+          <div class="scm-col">
+            <div class="sub-kicker">UPSTREAM · LAYER 0 → THIS PROTOCOL</div>
+            <div id="upstream-list"></div>
+          </div>
+          <div class="scm-col">
+            <div class="sub-kicker">DOWNSTREAM · THIS PROTOCOL → APPLICATIONS</div>
+            <div id="downstream-list"></div>
+          </div>
+        </div>
+        <div class="hidden-callout">
+          <div class="kicker">HIDDEN DEPENDENCY SPOTLIGHT</div>
+          <p id="hidden-dep-text">—</p>
+        </div>
+      </section>
+
+      <!-- ============ § 06 Findings ============ -->
+      <section class="section">
+        <div class="kicker">§ 05 · KEY FINDINGS</div>
+        <h2 class="section-h2">What the supply chain lens reveals.</h2>
+        <p class="sub-lede">Four non-obvious observations from the dependency trace.</p>
+        <div class="findings-grid" id="findings-grid"></div>
+      </section>
+
+      <!-- ============ § 07 Competitive Matrix ============ -->
+      <section class="section">
+        <div class="kicker">§ 06 · COMPETITIVE MATRIX</div>
+        <h2 class="section-h2">Protocol TVL ranking.</h2>
+        <p class="sub-lede">Side-by-side TVL across direct comparables, with the subject protocol highlighted.</p>
+        <div class="matrix-wrap" style="position: relative;">
+          <svg id="matrix-chart" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg>
+          <div id="matrix-tooltip" class="tooltip" role="status"></div>
+        </div>
+        <div class="caption">FIG. 6.1 · TVL COMPARISON · SOURCE: DEFI LLAMA API</div>
+      </section>
+
+      <!-- ============ § 08 Risk + Insight ============ -->
+      <section class="section">
+        <div class="cols cols-50-50">
+          <div class="col">
+            <div class="kicker">§ 07 · SUPPLY CHAIN RISK</div>
+            <h2 class="section-h2">Fragility score.</h2>
+            <div class="risk-display">
+              <span class="risk-score" id="risk-score">—</span>
+              <span class="risk-suffix">/ 10</span>
+            </div>
+            <div class="risk-bar-track">
+              <div class="risk-bar-fill" id="risk-bar-fill"></div>
+            </div>
+            <div class="risk-axis">
+              <span>REDUNDANT</span>
+              <span>FRAGILE</span>
+            </div>
+            <p class="risk-primary" id="risk-primary">—</p>
+            <p class="risk-reasoning" id="risk-reasoning">—</p>
+          </div>
+          <div class="col">
+            <div class="kicker">§ 08 · KEY INSIGHT</div>
+            <h2 class="section-h2">YYFoundry angle.</h2>
+            <div class="insight-callout">
+              <p id="key-insight-text">—</p>
+              <div class="caption">BIT != COIN · YYFOUNDRY RESEARCH</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ § 09 Content Hooks ============ -->
+      <section class="section">
+        <div class="kicker">§ 09 · CONTENT HOOKS</div>
+        <h2 class="section-h2">For YYFoundry production use.</h2>
+        <p class="sub-lede">Copy-ready hooks for video, long-form, and short-form distribution.</p>
+        <div class="hooks-cols">
+          <div class="hook-col">
+            <div class="hook-label">VIDEO HOOK</div>
+            <p class="hook-text" id="hook-video">—</p>
+            <button type="button" class="copy-btn" data-target="hook-video">COPY</button>
+          </div>
+          <div class="hook-col">
+            <div class="hook-label">SUBSTACK ANGLE</div>
+            <p class="hook-text" id="hook-substack">—</p>
+            <button type="button" class="copy-btn" data-target="hook-substack">COPY</button>
+          </div>
+          <div class="hook-col">
+            <div class="hook-label">X THREAD OPENER</div>
+            <p class="hook-text" id="hook-x">—</p>
+            <button type="button" class="copy-btn" data-target="hook-x">COPY</button>
+          </div>
+        </div>
+      </section>
+
+      <footer class="report-footer">
+        <span id="footer-text">DATA: DEFI LLAMA API · ANALYSIS: YYFOUNDRY AI RESEARCH AGENT · BIT != COIN</span>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        "use strict";
+
+        var SVG_NS = "http://www.w3.org/2000/svg";
+
+        function isBlank(v) {
+          return v === null || v === undefined || v === "" || v === "—";
+        }
+
+        function nullSpan() {
+          var span = document.createElement("span");
+          span.className = "null-val";
+          span.textContent = "—";
+          return span;
+        }
+
+        function setText(id, value) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          el.innerHTML = "";
+          if (isBlank(value)) {
+            el.appendChild(nullSpan());
+          } else {
+            el.textContent = String(value);
+          }
+        }
+
+        function formatMoney(value) {
+          if (typeof value !== "number" || !isFinite(value)) return null;
+          var abs = Math.abs(value);
+          var sign = value < 0 ? "-" : "";
+          if (abs >= 1e12) return sign + "$" + (abs / 1e12).toFixed(2) + "T";
+          if (abs >= 1e9)  return sign + "$" + (abs / 1e9).toFixed(2) + "B";
+          if (abs >= 1e6)  return sign + "$" + (abs / 1e6).toFixed(2) + "M";
+          if (abs >= 1e3)  return sign + "$" + (abs / 1e3).toFixed(1) + "K";
+          return sign + "$" + abs.toFixed(0);
+        }
+
+        function formatDateShort(value) {
+          if (!value) return "";
+          var d = (typeof value === "number") ? new Date(value * 1000) : new Date(value);
+          if (isNaN(d.getTime())) return String(value);
+          var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          return months[d.getUTCMonth()] + " " + d.getUTCDate();
+        }
+
+        function badgeClass(level) {
+          if (!level) return "low";
+          var s = String(level).toUpperCase();
+          if (s.indexOf("HIGH") !== -1) return "high";
+          if (s.indexOf("MED")  !== -1) return "med";
+          return "low";
+        }
+
+        // --------- Cover snapshot ---------
+
+        function renderChips(meta) {
+          var el = document.getElementById("protocol-chips");
+          el.innerHTML = "";
+          var items = [];
+          if (meta.category) items.push({ label: meta.category, accent: true });
+          (meta.chains || []).forEach(function (c) { items.push({ label: c }); });
+          if (meta.token_symbol) items.push({ label: meta.token_symbol, accent: true });
+          if (!items.length) {
+            el.appendChild(nullSpan());
+            return;
+          }
+          items.forEach(function (item) {
+            var span = document.createElement("span");
+            span.className = "chip" + (item.accent ? "" : " muted");
+            span.textContent = item.label;
+            el.appendChild(span);
+          });
+        }
+
+        function renderKPIs(kpis) {
+          var grid = document.getElementById("kpi-grid");
+          grid.innerHTML = "";
+          var cards = (kpis || []).slice(0, 4);
+          while (cards.length < 4) cards.push({ label: "—", value: null, delta: null, trend: null });
+          cards.forEach(function (kpi) {
+            var card = document.createElement("div");
+            card.className = "kpi-card";
+
+            var label = document.createElement("div");
+            label.className = "kpi-label";
+            label.textContent = kpi.label || "—";
+
+            var value = document.createElement("div");
+            value.className = "kpi-value";
+            if (isBlank(kpi.value)) {
+              value.appendChild(nullSpan());
+            } else {
+              value.textContent = String(kpi.value);
+            }
+
+            var delta = document.createElement("div");
+            delta.className = "kpi-delta";
+            if (isBlank(kpi.delta)) {
+              delta.appendChild(nullSpan());
+            } else {
+              var trend = (kpi.trend || "").toLowerCase();
+              var arrow = trend === "up" ? "▲" : (trend === "down" ? "▼" : "");
+              delta.classList.add(trend === "up" ? "delta-up" : (trend === "down" ? "delta-down" : "delta-flat"));
+              delta.textContent = (arrow ? arrow + " " : "") + kpi.delta;
+            }
+
+            card.appendChild(label);
+            card.appendChild(value);
+            card.appendChild(delta);
+            grid.appendChild(card);
+          });
+        }
+
+        // --------- Metrics table ---------
+
+        function renderMetrics(rows) {
+          var tbody = document.getElementById("metrics-tbody");
+          tbody.innerHTML = "";
+          (rows || []).forEach(function (row) {
+            var tr = document.createElement("tr");
+            var tdLabel = document.createElement("td");
+            tdLabel.textContent = row.label || "—";
+            var tdValue = document.createElement("td");
+            if (isBlank(row.value)) {
+              tdValue.appendChild(nullSpan());
+            } else {
+              tdValue.textContent = String(row.value);
+            }
+            tr.appendChild(tdLabel);
+            tr.appendChild(tdValue);
+            tbody.appendChild(tr);
+          });
+        }
+
+        // --------- Layer ---------
+
+        function renderLayer(layer) {
+          if (!layer) layer = {};
+          setText("layer-num", layer.number);
+          setText("layer-name", layer.name);
+          setText("layer-desc", layer.stack_description);
+        }
+
+        // --------- TVL Chart ---------
+
+        function renderTvlChart(history) {
+          var svg = document.getElementById("tvl-chart");
+          svg.innerHTML = "";
+          var W = 736, H = 220;
+          var pad = { top: 12, right: 56, bottom: 28, left: 4 };
+          var pw = W - pad.left - pad.right;
+          var ph = H - pad.top  - pad.bottom;
+
+          var tooltip = document.getElementById("tvl-tooltip");
+          tooltip.style.opacity = "0";
+
+          if (!history || history.length < 2) {
+            var msg = document.createElementNS(SVG_NS, "text");
+            msg.setAttribute("x", W / 2);
+            msg.setAttribute("y", H / 2);
+            msg.setAttribute("text-anchor", "middle");
+            msg.setAttribute("class", "axis-label");
+            msg.textContent = "Data unavailable";
+            svg.appendChild(msg);
+            return;
+          }
+
+          var values = history.map(function (p) { return Number(p.tvl); });
+          var minV = Math.min.apply(null, values);
+          var maxV = Math.max.apply(null, values);
+          var range = (maxV - minV) || 1;
+          minV -= range * 0.06;
+          maxV += range * 0.10;
+          range = maxV - minV;
+
+          var n = history.length;
+          var stepX = pw / (n - 1);
+
+          var pts = history.map(function (p, i) {
+            return {
+              x: pad.left + i * stepX,
+              y: pad.top + ph - ((Number(p.tvl) - minV) / range) * ph,
+              date: p.date,
+              tvl: Number(p.tvl),
+            };
+          });
+
+          // gridlines + y axis labels (4 segments)
+          for (var g = 0; g <= 4; g++) {
+            var y = pad.top + (ph / 4) * g;
+            if (g > 0 && g < 4) {
+              var line = document.createElementNS(SVG_NS, "line");
+              line.setAttribute("x1", pad.left);
+              line.setAttribute("x2", pad.left + pw);
+              line.setAttribute("y1", y);
+              line.setAttribute("y2", y);
+              line.setAttribute("stroke", "#d9d4c5");
+              line.setAttribute("stroke-width", "0.5");
+              svg.appendChild(line);
+            }
+            var labelV = maxV - (range / 4) * g;
+            var lbl = document.createElementNS(SVG_NS, "text");
+            lbl.setAttribute("x", W - 4);
+            lbl.setAttribute("y", y + 3);
+            lbl.setAttribute("text-anchor", "end");
+            lbl.setAttribute("class", "axis-label y");
+            lbl.textContent = formatMoney(labelV) || "";
+            svg.appendChild(lbl);
+          }
+
+          // bottom axis
+          var axisLine = document.createElementNS(SVG_NS, "line");
+          axisLine.setAttribute("x1", pad.left);
+          axisLine.setAttribute("x2", pad.left + pw);
+          axisLine.setAttribute("y1", pad.top + ph);
+          axisLine.setAttribute("y2", pad.top + ph);
+          axisLine.setAttribute("stroke", "#18170f");
+          axisLine.setAttribute("stroke-width", "0.6");
+          svg.appendChild(axisLine);
+
+          // area
+          var areaD = pts.map(function (p, i) {
+            return (i === 0 ? "M" : "L") + p.x.toFixed(2) + " " + p.y.toFixed(2);
+          }).join(" ");
+          areaD += " L" + pts[pts.length - 1].x.toFixed(2) + " " + (pad.top + ph).toFixed(2);
+          areaD += " L" + pts[0].x.toFixed(2) + " " + (pad.top + ph).toFixed(2) + " Z";
+          var area = document.createElementNS(SVG_NS, "path");
+          area.setAttribute("d", areaD);
+          area.setAttribute("fill", "#1a3a3a");
+          area.setAttribute("fill-opacity", "0.10");
+          svg.appendChild(area);
+
+          // line
+          var lineD = pts.map(function (p, i) {
+            return (i === 0 ? "M" : "L") + p.x.toFixed(2) + " " + p.y.toFixed(2);
+          }).join(" ");
+          var path = document.createElementNS(SVG_NS, "path");
+          path.setAttribute("d", lineD);
+          path.setAttribute("fill", "none");
+          path.setAttribute("stroke", "#1a3a3a");
+          path.setAttribute("stroke-width", "1.5");
+          path.setAttribute("opacity", "0.92");
+          svg.appendChild(path);
+
+          // x axis labels: first, middle, last
+          [0, Math.floor(n / 2), n - 1].forEach(function (i) {
+            var t = document.createElementNS(SVG_NS, "text");
+            t.setAttribute("x", pts[i].x);
+            t.setAttribute("y", pad.top + ph + 16);
+            t.setAttribute("text-anchor", i === 0 ? "start" : (i === n - 1 ? "end" : "middle"));
+            t.setAttribute("class", "axis-label");
+            t.textContent = formatDateShort(history[i].date);
+            svg.appendChild(t);
+          });
+
+          // hover overlay (one rect per point)
+          pts.forEach(function (p, i) {
+            var rect = document.createElementNS(SVG_NS, "rect");
+            rect.setAttribute("x", p.x - stepX / 2);
+            rect.setAttribute("y", pad.top);
+            rect.setAttribute("width", stepX);
+            rect.setAttribute("height", ph);
+            rect.setAttribute("fill", "transparent");
+            rect.style.cursor = "crosshair";
+            var dot = document.createElementNS(SVG_NS, "circle");
+            dot.setAttribute("cx", p.x);
+            dot.setAttribute("cy", p.y);
+            dot.setAttribute("r", "3");
+            dot.setAttribute("fill", "#fbfaf6");
+            dot.setAttribute("stroke", "#1a3a3a");
+            dot.setAttribute("stroke-width", "1.5");
+            dot.style.opacity = "0";
+            svg.appendChild(dot);
+
+            rect.addEventListener("mouseenter", function () {
+              dot.style.opacity = "1";
+              tooltip.innerHTML =
+                "<strong>" + formatDateShort(p.date) + "</strong><br>" +
+                (formatMoney(p.tvl) || "—");
+              tooltip.style.opacity = "1";
+            });
+            rect.addEventListener("mousemove", function (ev) {
+              var rectBox = svg.getBoundingClientRect();
+              var ratioX = (ev.clientX - rectBox.left) / rectBox.width;
+              tooltip.style.left = (ratioX * rectBox.width + 12) + "px";
+              tooltip.style.top  = (p.y / H) * rectBox.height + "px";
+            });
+            rect.addEventListener("mouseleave", function () {
+              dot.style.opacity = "0";
+              tooltip.style.opacity = "0";
+            });
+            svg.appendChild(rect);
+          });
+        }
+
+        // --------- SCM Cards ---------
+
+        function renderUpstream(items) {
+          var host = document.getElementById("upstream-list");
+          host.innerHTML = "";
+          if (!items || !items.length) { host.appendChild(nullSpan()); return; }
+          items.forEach(function (it) {
+            var card = document.createElement("div");
+            card.className = "scm-card";
+
+            var row1 = document.createElement("div");
+            row1.className = "row1";
+            var tag = document.createElement("span");
+            tag.className = "layer-tag";
+            tag.textContent = "[LAYER " + (it.layer_num !== undefined && it.layer_num !== null ? it.layer_num : "—") + "]";
+            row1.appendChild(tag);
+            if (it.concentration_risk) {
+              var b = document.createElement("span");
+              b.className = "badge " + badgeClass(it.concentration_risk);
+              b.textContent = String(it.concentration_risk).toUpperCase();
+              row1.appendChild(b);
+            }
+            card.appendChild(row1);
+
+            var name = document.createElement("div");
+            name.className = "name";
+            if (isBlank(it.name)) name.appendChild(nullSpan()); else name.textContent = it.name;
+            card.appendChild(name);
+
+            var analogy = document.createElement("div");
+            analogy.className = "analogy";
+            if (isBlank(it.analogy)) analogy.appendChild(nullSpan()); else analogy.textContent = it.analogy;
+            card.appendChild(analogy);
+
+            if (!isBlank(it.notes)) {
+              var notes = document.createElement("div");
+              notes.className = "notes";
+              notes.textContent = it.notes;
+              card.appendChild(notes);
+            }
+            host.appendChild(card);
+          });
+        }
+
+        function renderDownstream(items) {
+          var host = document.getElementById("downstream-list");
+          host.innerHTML = "";
+          if (!items || !items.length) { host.appendChild(nullSpan()); return; }
+          items.forEach(function (it) {
+            var card = document.createElement("div");
+            card.className = "scm-card downstream";
+
+            var row1 = document.createElement("div");
+            row1.className = "row1";
+            var name = document.createElement("span");
+            name.className = "name";
+            name.textContent = isBlank(it.name) ? "—" : it.name;
+            row1.appendChild(name);
+            if (it.lock_in) {
+              var b = document.createElement("span");
+              b.className = "badge " + badgeClass(it.lock_in);
+              b.textContent = String(it.lock_in).toUpperCase() + " LOCK-IN";
+              row1.appendChild(b);
+            }
+            card.appendChild(row1);
+
+            if (!isBlank(it.dependency_type)) {
+              var dt = document.createElement("div");
+              dt.className = "dep-type";
+              dt.textContent = it.dependency_type;
+              card.appendChild(dt);
+            }
+
+            var impact = document.createElement("div");
+            impact.className = "impact";
+            if (isBlank(it.impact)) impact.appendChild(nullSpan()); else impact.textContent = it.impact;
+            card.appendChild(impact);
+
+            host.appendChild(card);
+          });
+        }
+
+        // --------- Findings ---------
+
+        function renderFindings(items) {
+          var grid = document.getElementById("findings-grid");
+          grid.innerHTML = "";
+          var cards = (items || []).slice(0, 4);
+          while (cards.length < 4) cards.push({ heading: null, body: null });
+          cards.forEach(function (f, i) {
+            var card = document.createElement("div");
+            card.className = "finding-card";
+
+            var num = document.createElement("div");
+            num.className = "finding-num";
+            num.textContent = (i + 1).toString().padStart(2, "0");
+            card.appendChild(num);
+
+            var heading = document.createElement("div");
+            heading.className = "finding-heading";
+            if (isBlank(f.heading)) heading.appendChild(nullSpan()); else heading.textContent = f.heading;
+            card.appendChild(heading);
+
+            var body = document.createElement("div");
+            body.className = "finding-body";
+            if (isBlank(f.body)) body.appendChild(nullSpan()); else body.textContent = f.body;
+            card.appendChild(body);
+
+            grid.appendChild(card);
+          });
+        }
+
+        // --------- Competitive Matrix ---------
+
+        function renderMatrix(comparables, currentName) {
+          var svg = document.getElementById("matrix-chart");
+          svg.innerHTML = "";
+
+          if (!comparables || !comparables.length) {
+            svg.setAttribute("viewBox", "0 0 736 60");
+            var msg = document.createElementNS(SVG_NS, "text");
+            msg.setAttribute("x", 368);
+            msg.setAttribute("y", 30);
+            msg.setAttribute("text-anchor", "middle");
+            msg.setAttribute("class", "axis-label");
+            msg.textContent = "Data unavailable";
+            svg.appendChild(msg);
+            return;
+          }
+
+          var W = 736;
+          var nameCol = 130;
+          var valueCol = 90;
+          var feesCol = 80;
+          var barMax = W - nameCol - valueCol - feesCol - 24;
+          var rowH = 32;
+          var H = comparables.length * rowH + 32;
+
+          svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+
+          var maxTvl = Math.max.apply(
+            null,
+            comparables.map(function (c) { return Number(c.tvl) || 0; })
+          ) || 1;
+
+          // header
+          var headerY = 16;
+          var hdr = function (x, label, anchor) {
+            var t = document.createElementNS(SVG_NS, "text");
+            t.setAttribute("x", x);
+            t.setAttribute("y", headerY);
+            t.setAttribute("text-anchor", anchor || "start");
+            t.setAttribute("class", "axis-label");
+            t.textContent = label;
+            svg.appendChild(t);
+          };
+          hdr(0, "PROTOCOL");
+          hdr(nameCol + 4, "TVL");
+          hdr(W - feesCol, "FEES 24H", "start");
+
+          var headerRule = document.createElementNS(SVG_NS, "line");
+          headerRule.setAttribute("x1", 0);
+          headerRule.setAttribute("x2", W);
+          headerRule.setAttribute("y1", headerY + 8);
+          headerRule.setAttribute("y2", headerY + 8);
+          headerRule.setAttribute("stroke", "#18170f");
+          headerRule.setAttribute("stroke-width", "1");
+          svg.appendChild(headerRule);
+
+          var tooltip = document.getElementById("matrix-tooltip");
+          tooltip.style.opacity = "0";
+
+          comparables.forEach(function (c, i) {
+            var y0 = headerY + 16 + i * rowH;
+            var isCurrent = currentName && String(c.name).toLowerCase() === String(currentName).toLowerCase();
+            var width = (Number(c.tvl) || 0) / maxTvl * barMax;
+            if (Number(c.tvl) > 0) width = Math.max(width, 2);
+
+            var g = document.createElementNS(SVG_NS, "g");
+            g.setAttribute("class", "matrix-row");
+
+            var bg = document.createElementNS(SVG_NS, "rect");
+            bg.setAttribute("class", "matrix-row-bg");
+            bg.setAttribute("x", 0);
+            bg.setAttribute("y", y0 - 4);
+            bg.setAttribute("width", W);
+            bg.setAttribute("height", rowH);
+            g.appendChild(bg);
+
+            var name = document.createElementNS(SVG_NS, "text");
+            name.setAttribute("class", "matrix-name" + (isCurrent ? " current" : ""));
+            name.setAttribute("x", 0);
+            name.setAttribute("y", y0 + 16);
+            name.textContent = c.name || "—";
+            g.appendChild(name);
+
+            if (Number(c.tvl) > 0) {
+              var bar = document.createElementNS(SVG_NS, "rect");
+              bar.setAttribute("x", nameCol);
+              bar.setAttribute("y", y0 + 4);
+              bar.setAttribute("width", width);
+              bar.setAttribute("height", 18);
+              bar.setAttribute("fill", isCurrent ? "#1a3a3a" : "#d9d4c5");
+              bar.setAttribute("opacity", "0.92");
+              g.appendChild(bar);
+            }
+
+            var tvl = document.createElementNS(SVG_NS, "text");
+            tvl.setAttribute("class", "matrix-tvl");
+            tvl.setAttribute("x", nameCol + barMax + 8);
+            tvl.setAttribute("y", y0 + 16);
+            tvl.textContent = formatMoney(c.tvl) || "—";
+            g.appendChild(tvl);
+
+            var fees = document.createElementNS(SVG_NS, "text");
+            fees.setAttribute("class", "matrix-fees");
+            fees.setAttribute("x", W - feesCol);
+            fees.setAttribute("y", y0 + 16);
+            var feesLabel = formatMoney(c.fees_24h);
+            fees.textContent = feesLabel || "—";
+            if (!feesLabel) fees.setAttribute("font-style", "italic");
+            g.appendChild(fees);
+
+            g.addEventListener("mouseenter", function () {
+              var line = (c.name || "—") + " · " +
+                         (formatMoney(c.tvl) || "—") +
+                         (c.category ? (" · " + c.category) : "");
+              tooltip.textContent = line;
+              tooltip.style.opacity = "1";
+            });
+            g.addEventListener("mousemove", function (ev) {
+              var box = svg.getBoundingClientRect();
+              tooltip.style.left = (ev.clientX - box.left + 12) + "px";
+              tooltip.style.top  = (ev.clientY - box.top  - 24) + "px";
+            });
+            g.addEventListener("mouseleave", function () {
+              tooltip.style.opacity = "0";
+            });
+
+            svg.appendChild(g);
+          });
+        }
+
+        // --------- Risk ---------
+
+        function renderRisk(risk) {
+          if (!risk) risk = {};
+          var score = risk.score;
+          var scoreEl = document.getElementById("risk-score");
+          scoreEl.innerHTML = "";
+          if (typeof score === "number" && isFinite(score)) {
+            scoreEl.textContent = String(Math.round(score));
+          } else {
+            scoreEl.appendChild(nullSpan());
+          }
+
+          var fill = document.getElementById("risk-bar-fill");
+          var pct = (typeof score === "number" && isFinite(score))
+            ? Math.max(0, Math.min(10, score)) * 10
+            : 0;
+          fill.style.width = pct + "%";
+          fill.classList.toggle("fragile", typeof score === "number" && score >= 7);
+
+          setText("risk-primary", risk.primary_risk);
+          setText("risk-reasoning", risk.reasoning);
+        }
+
+        // --------- Hooks copy ---------
+
+        function bindCopyButtons() {
+          document.querySelectorAll(".copy-btn").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var target = document.getElementById(btn.dataset.target);
+              if (!target) return;
+              var text = (target.textContent || "").trim();
+              if (!text || text === "—") return;
+              var done = function () {
+                btn.classList.add("is-copied");
+                btn.textContent = "COPIED";
+                setTimeout(function () {
+                  btn.classList.remove("is-copied");
+                  btn.textContent = "COPY";
+                }, 2000);
+              };
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(done).catch(function () {
+                  btn.textContent = "COPY FAILED";
+                });
+              } else {
+                var ta = document.createElement("textarea");
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand("copy"); done(); } finally {
+                  document.body.removeChild(ta);
+                }
+              }
+            });
+          });
+        }
+
+        // --------- Boot ---------
+
+        document.addEventListener("DOMContentLoaded", function () {
+          var data = window.REPORT_DATA;
+          if (!data) {
+            var banner = document.getElementById("data-banner");
+            if (banner) banner.removeAttribute("hidden");
+            bindCopyButtons();
+            return;
+          }
+
+          var meta = data.meta || {};
+
+          document.title = (meta.protocol_name || "YYFoundry Research") + " — YYFoundry Research";
+          setText("running-date", meta.date);
+          setText("running-kicker", "ATOMS TO BITS · " + (meta.protocol_name || ""));
+          setText("protocol-name", meta.protocol_name);
+          setText("protocol-description", meta.description);
+          renderChips(meta);
+
+          renderKPIs(data.kpis);
+          setText("tldr-text", data.tldr);
+          renderMetrics(data.metrics);
+          renderLayer(data.layer);
+          renderTvlChart(data.tvl_history);
+          renderUpstream(data.upstream);
+          renderDownstream(data.downstream);
+          setText("hidden-dep-text", data.hidden_dependency);
+          renderFindings(data.findings);
+          renderMatrix(data.comparables, meta.protocol_name);
+          renderRisk(data.risk);
+          setText("key-insight-text", data.key_insight);
+
+          var hooks = data.content_hooks || {};
+          setText("hook-video", hooks.video);
+          setText("hook-substack", hooks.substack);
+          setText("hook-x", hooks.x_thread);
+
+          var footer = document.getElementById("footer-text");
+          footer.textContent =
+            "DATA: DEFI LLAMA API · ANALYSIS: YYFOUNDRY AI RESEARCH AGENT · BIT != COIN · " +
+            (meta.date || "");
+
+          bindCopyButtons();
+        });
+      })();
+    </script>
   </body>
 </html>
