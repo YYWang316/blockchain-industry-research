@@ -73,6 +73,19 @@ The new entry should reciprocate with `- **Supersedes:** I-NNN`. `P_INCIDENT_POS
 - **Detection:** `tools/research/validate_report_html.py` is fail-closed for this shape: parse each `porter-text` div, require exactly one `<ul>`, count direct `<li>` == 5, verify each `<li>` starts with a whitelisted QC/no-QC sentence for the correct dimension at the correct index. `P5_html_gate` rejects HTML that fails this; `skills_repo/er/agents/report_validator.md` and `agents/attackers/red_team_narrative.md` also surface it as critical.
 - **Related contract:** `skills_repo/er/references/report_style_guide_cn.md` §波特五力; `skills_repo/er/references/report_style_guide_en.md` (mirror EN rule); `skills_repo/er/agents/report_writer_cn.md` table row for `{{PORTER_COMPANY_TEXT}}`; `skills_repo/er/agents/report_writer_en.md` mirror; `skills_repo/er/agents/qc_resolution_merge.md`; `skills_repo/er/agents/report_validator.md` §"中文 Porter 句式".
 
+## I-005 — Metrics table content and verdict cell not enforced by validator
+
+- **Date observed:** 2026-05-05 (run `Li_Auto_2026-05-05_dd577c81/research/Li_Auto_Research_CN.html`, lines 610–617)
+- **Phase:** `P5_html`; also implicates `P5_html_gate`.
+- **What happened:** Section II metrics table rendered seven rows of absolute P&L amounts (`营业收入 / 毛利润 / 营业利润 / 净利润 / 稀释EPS / 经营现金流 / 自由现金流`) instead of the nine ratio rows mandated by `skills_repo/er/references/financial_metrics.md` §"Metrics table YoY movement verdict" (`毛利率 / 营业利润率 / 净利率 / ROE / ROA / 资产负债率 / 利息保障倍数 / 每股收益（EPS）/ 自由现金流利润率`). The 4th-column verdict cell was also unconstrained — emitter wrote `显著恶化` on every row without any check against the controlled vocabulary. `validate_report_html.py` exit 0; `report_validation.txt` `pass`.
+- **Root cause:** `tools/research/validate_report_html.py` has zero assertions about the metrics table — no row-name whitelist, no `<td>`-count, no 4th-cell vocab. Same family as I-004 (validator silent on a slot's content shape), different slot.
+- **Rule (load-bearing):**
+  - The metrics table MUST contain **exactly nine `<tr>`** whose first `<td>` plain text matches the controlled ratio names per `financial_metrics.md` (CN: `毛利率`, `营业利润率`, `净利率`, `ROE`, `ROA`, `资产负债率`, `利息保障倍数`, `每股收益（EPS）` (alias `稀释EPS` accepted), `自由现金流利润率`; EN equivalents in the same file).
+  - Each row MUST have **exactly four `<td>`** (指标 / 当年值 / 上年值 / 同比变动).
+  - The 4th `<td>` plain text MUST match the controlled vocabulary — CN: `显著改善 | 改善 | 基本持平 | 恶化 | 显著恶化 | 权益缺口收窄 | 权益缺口扩大 | 期末股东权益为负 | 不适用`; EN: `Significantly improved | Improved | Stable | Deteriorated | Significantly deteriorated | Equity deficit narrowed | Equity deficit widened | Ending equity negative | N/A`.
+- **Detection:** `tools/research/validate_report_html.py` parses `<table class="metrics-table"> <tbody>` and fails-closed if row count ≠ 9, any first-`<td>` is not in the ratio whitelist, any row has ≠ 4 `<td>`, or the 4th-`<td>` plain text is not in the controlled vocab. `P5_html_gate` rejects on failure.
+- **Related contract:** `skills_repo/er/references/financial_metrics.md` §"Metrics table YoY movement verdict"; `skills_repo/er/agents/report_writer_cn.md` §`{{METRICS_ROWS}}`; `skills_repo/er/agents/report_writer_en.md` mirror; `tools/research/validate_report_html.py`.
+
 ---
 
 ## How this file is used

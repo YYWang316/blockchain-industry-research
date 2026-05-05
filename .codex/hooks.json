@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .codex/hooks/inject_incidents.py"
+            "command": "sh -c 'R=$(git rev-parse --show-superproject-working-tree 2>/dev/null); [ -z \"$R\" ] && R=$(git rev-parse --show-toplevel); exec python3 \"$R/.codex/hooks/inject_incidents.py\"'"
           }
         ]
       }

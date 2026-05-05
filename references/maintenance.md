@@ -64,3 +64,21 @@ git commit -m "bump er submodule to <sha>"
 ```
 
 Run the full `pytest -q` suite before commit. Submodule bumps are deliberate — never auto-update.
+
+## Hook cwd-invariance
+
+Hook commands in `.claude/settings.json` and `.codex/hooks.json` must resolve their script path **independent of the user's cwd**, including when cwd is inside a submodule (`skills_repo/er`, `skills_repo/ep`). A hook that uses a bare relative path (`python3 .claude/hooks/inject_incidents.py`) silently breaks the moment the user changes directory into a submodule — the relative path resolves against the submodule root, the file isn't there, and `UserPromptSubmit` is blocked. Treat this as an Auditability failure, not a quality-of-life bug: an incident gate that doesn't fire when cwd drifts is the same as no gate.
+
+Host-specific patterns:
+
+- **Claude Code** — uses the injected `$CLAUDE_PROJECT_DIR`:
+  ```json
+  "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/inject_incidents.py\""
+  ```
+- **Codex** — does not inject a project-root env var. Resolve via git, with submodule fallback:
+  ```json
+  "command": "sh -c 'R=$(git rev-parse --show-superproject-working-tree 2>/dev/null); [ -z \"$R\" ] && R=$(git rev-parse --show-toplevel); exec python3 \"$R/.codex/hooks/inject_incidents.py\"'"
+  ```
+  `--show-superproject-working-tree` returns the parent repo's worktree when cwd is inside a submodule (empty otherwise); the fallback to `--show-toplevel` covers the non-submodule case. **Do not** use `--show-toplevel` alone — inside a submodule it returns the submodule root, which is the bug we're trying to prevent.
+
+Hook Python scripts themselves should anchor with `Path(__file__).resolve().parent.parent.parent` so once invoked correctly they don't depend on cwd either. The fragile layer is always the shell command in the config file.

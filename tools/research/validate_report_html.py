@@ -53,6 +53,56 @@ PORTER_FORCES = (
     ("行业竞争强度", "competitive rivalry"),
 )
 
+# I-005: metrics table — nine controlled ratio categories.
+METRIC_ROW_ALIASES: dict[str, tuple[str, ...]] = {
+    "gross_margin": ("毛利率", "Gross Margin", "Gross margin"),
+    "operating_margin": ("营业利润率", "Operating Margin", "Operating margin"),
+    "net_margin": ("净利率", "Net Margin", "Net margin"),
+    "roe": ("ROE",),
+    "roa": ("ROA",),
+    "debt_to_asset": (
+        "资产负债率",
+        "Debt-to-asset ratio",
+        "Debt-to-Asset Ratio",
+        "Asset-liability ratio",
+        "Asset-Liability Ratio",
+    ),
+    "interest_coverage": (
+        "利息保障倍数",
+        "Interest Coverage",
+        "Interest coverage",
+        "Interest Coverage Ratio",
+    ),
+    "eps": (
+        "每股收益（EPS）",
+        "每股收益(EPS)",
+        "稀释EPS",
+        "EPS",
+        "Diluted EPS",
+        "Earnings per share",
+        "Earnings per Share",
+    ),
+    "fcf_margin": (
+        "自由现金流利润率",
+        "FCF Margin",
+        "FCF margin",
+        "Free Cash Flow Margin",
+        "Free cash flow margin",
+    ),
+}
+
+_METRIC_NAME_TO_KEY: dict[str, str] = {
+    name: key for key, names in METRIC_ROW_ALIASES.items() for name in names
+}
+
+METRIC_VERDICT_VOCAB: frozenset[str] = frozenset({
+    "显著改善", "改善", "基本持平", "恶化", "显著恶化",
+    "权益缺口收窄", "权益缺口扩大", "期末股东权益为负", "不适用",
+    "Significantly improved", "Improved", "Stable", "Deteriorated",
+    "Significantly deteriorated", "Equity deficit narrowed",
+    "Equity deficit widened", "Ending equity negative", "N/A",
+})
+
 
 def _find_single_report(research_dir: Path) -> Path | None:
     candidates = sorted(
@@ -144,6 +194,68 @@ def _validate_porter_texts(soup: BeautifulSoup) -> tuple[list[str], list[str]]:
     return errors, warnings
 
 
+def _validate_metrics_table(soup: BeautifulSoup) -> tuple[list[str], list[str]]:
+    """I-005: Section II metrics table content and verdict cell vocabulary."""
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    table = soup.select_one("table.metrics-table")
+    if table is None:
+        errors.append("missing <table class='metrics-table'> (I-005)")
+        return errors, warnings
+
+    tbody = table.find("tbody")
+    rows = tbody.find_all("tr", recursive=False) if tbody else []
+    if not rows:
+        errors.append("metrics-table tbody contains no <tr> (I-005)")
+        return errors, warnings
+
+    if len(rows) != 9:
+        errors.append(
+            f"metrics-table must contain exactly 9 <tr>; got {len(rows)} (I-005)"
+        )
+
+    seen_keys: set[str] = set()
+    for idx, tr in enumerate(rows, start=1):
+        tds = tr.find_all("td", recursive=False)
+        if len(tds) != 4:
+            errors.append(
+                f"metrics-table row[{idx}] must have exactly 4 <td>; got {len(tds)} (I-005)"
+            )
+            continue
+
+        name = tds[0].get_text(" ", strip=True)
+        key = _METRIC_NAME_TO_KEY.get(name)
+        if key is None:
+            errors.append(
+                f"metrics-table row[{idx}] first <td> '{name}' is not in the controlled ratio whitelist; "
+                "expected one of 毛利率/营业利润率/净利率/ROE/ROA/资产负债率/利息保障倍数/每股收益（EPS）/自由现金流利润率 "
+                "or English equivalents (I-005)"
+            )
+        elif key in seen_keys:
+            errors.append(
+                f"metrics-table row[{idx}] '{name}' duplicates ratio category '{key}' (I-005)"
+            )
+        else:
+            seen_keys.add(key)
+
+        verdict = tds[3].get_text(" ", strip=True)
+        if verdict not in METRIC_VERDICT_VOCAB:
+            errors.append(
+                f"metrics-table row[{idx}] 4th <td> '{verdict}' is not in the controlled verdict vocabulary "
+                "(I-005). Expected: 显著改善/改善/基本持平/恶化/显著恶化/权益缺口收窄/权益缺口扩大/期末股东权益为负/不适用 "
+                "or English equivalents."
+            )
+
+    if len(rows) == 9 and len(seen_keys) < 9:
+        missing = sorted(set(METRIC_ROW_ALIASES.keys()) - seen_keys)
+        errors.append(
+            f"metrics-table missing required ratio categories: {missing} (I-005)"
+        )
+
+    return errors, warnings
+
+
 def validate_html_report(html_path: Path, skeleton_path: Path | None = None) -> dict[str, Any]:
     html_path = html_path.resolve()
     errors: list[str] = []
@@ -213,6 +325,10 @@ def validate_html_report(html_path: Path, skeleton_path: Path | None = None) -> 
     porter_errors, porter_warnings = _validate_porter_texts(soup)
     errors.extend(porter_errors)
     warnings.extend(porter_warnings)
+
+    metrics_errors, metrics_warnings = _validate_metrics_table(soup)
+    errors.extend(metrics_errors)
+    warnings.extend(metrics_warnings)
 
     script_text = "\n".join(node.get_text("\n") for node in soup.find_all("script"))
     for var_name in ("waterfallData", "sankeyActualData", "sankeyForecastData", "porterScores"):
