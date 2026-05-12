@@ -1,7 +1,7 @@
 """The host skill-mount stubs MUST mirror root SKILL.md's frontmatter.
 
-`.claude/skills/anamnesis-research/SKILL.md` and
-`.agents/skills/anamnesis-research/SKILL.md` are stubs whose only job is to give
+`.claude/skills/stack-anamnesis/SKILL.md` and
+`.agents/skills/stack-anamnesis/SKILL.md` are stubs whose only job is to give
 each host an auto-discoverable trigger location. The frontmatter (`name` +
 `description`) is what actually triggers the skill — drift between root and
 mount means the mounts trigger differently from the canonical body, which is
@@ -19,8 +19,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_SKILL = ROOT / "SKILL.md"
 MOUNTS = [
-    ROOT / ".claude" / "skills" / "anamnesis-research" / "SKILL.md",
-    ROOT / ".agents" / "skills" / "anamnesis-research" / "SKILL.md",
+    ROOT / ".claude" / "skills" / "stack-anamnesis" / "SKILL.md",
+    ROOT / ".agents" / "skills" / "stack-anamnesis" / "SKILL.md",
 ]
 
 
@@ -68,8 +68,8 @@ def _normalise(text: str) -> str:
 
 def test_root_skill_has_required_frontmatter():
     fm = _parse_frontmatter(ROOT_SKILL)
-    assert fm.get("name") == "anamnesis-research", (
-        f"root SKILL.md must declare name: anamnesis-research (got {fm.get('name')!r})"
+    assert fm.get("name") == "stack-anamnesis", (
+        f"root SKILL.md must declare name: stack-anamnesis (got {fm.get('name')!r})"
     )
     assert fm.get("description"), "root SKILL.md description is missing"
 

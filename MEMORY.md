@@ -3,7 +3,7 @@ schema_version: 1
 description: Project-level invariants frozen into the system prompt at session start. Do not violate without an explicit user instruction in the same turn.
 ---
 
-# Anamnesis Research — Project Memory
+# Stack Anamnesis — Project Memory
 
 These rules are **load-bearing** and apply to every run. They are read once at session start and frozen into `meta/system_prompt.frozen.txt`. `INCIDENTS.md` is loaded alongside this file at the same moment and into the same frozen prompt — it carries the project's institutional memory of past failure modes (one entry per incident, with the load-bearing rule that prevents recurrence). Read both. The contracts compose: anything in `INCIDENTS.md` overrides nothing here, and nothing here waives anything in `INCIDENTS.md`.
 

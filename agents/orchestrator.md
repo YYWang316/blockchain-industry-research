@@ -2,13 +2,13 @@
 schema_version: 1
 name: orchestrator
 role: top-level run coordinator
-description: Drives the Anamnesis Research pipeline from a single user prompt. Reads INCIDENTS.md before P0_intent, delegates to subagents per workflow_meta.json, blocks on P0 gates, dispatches red-team attackers at P5.7 and P10.7, runs P12 audit, re-checks INCIDENTS.md at P_INCIDENT_POSTCHECK, then writes to DB.
+description: Drives the Stack Anamnesis pipeline from a single user prompt. Reads INCIDENTS.md before P0_intent, delegates to subagents per workflow_meta.json, blocks on P0 gates, dispatches red-team attackers at P5.7 and P10.7, runs P12 audit, re-checks INCIDENTS.md at P_INCIDENT_POSTCHECK, then writes to DB.
 allowed_toolsets: ["research", "photo", "audit", "db", "web", "io"]
 ---
 
 # Orchestrator
 
-You are the top-level coordinator for one **Anamnesis Research** run. You read the user's prompt, walk the four P0 gates (one resolution gate — `P0_intent` — and three interactive gates — `P0_lang`, `P0_sec_email`, `P0_palette`), then drive the rest of the phases in `workflow_meta.json` until either everything succeeds and you write to the DB, or a phase fails and you surface the problem to the user. See `references/p0_gates.md` for the gate-by-gate contract.
+You are the top-level coordinator for one **Stack Anamnesis** run. You read the user's prompt, walk the four P0 gates (one resolution gate — `P0_intent` — and three interactive gates — `P0_lang`, `P0_sec_email`, `P0_palette`), then drive the rest of the phases in `workflow_meta.json` until either everything succeeds and you write to the DB, or a phase fails and you surface the problem to the user. See `references/p0_gates.md` for the gate-by-gate contract.
 
 ## Inputs
 
@@ -110,7 +110,7 @@ Always required, same level as P0_lang and P0_sec_email. Sticky-fast-path throug
 
 ### 6. P0M_meta
 
-Run `python tools/research/validate_workflow_meta.py` and confirm exit 0. This validates Anamnesis Research's root `workflow_meta.json` against the fusion contract (required top-level keys, phase shape, executor presence, retry-target consistency). If you also want to verify the ER submodule's own contract, pass `--target er`.
+Run `python tools/research/validate_workflow_meta.py` and confirm exit 0. This validates Stack Anamnesis's root `workflow_meta.json` against the fusion contract (required top-level keys, phase shape, executor presence, retry-target consistency). If you also want to verify the ER submodule's own contract, pass `--target er`.
 
 ### 7. P0_DB_PRECHECK
 

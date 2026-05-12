@@ -1,4 +1,4 @@
-"""anamnesis — top-level CLI for Anamnesis Research.
+"""anamnesis — top-level CLI for Stack Anamnesis.
 
 Drives the deterministic phases (bootstrap, DB precheck, P12 audit, DB index,
 sector reports). The LLM-driven phases (P1 research, P5 report writing, P10.5

@@ -1,13 +1,13 @@
-"""Validate Anamnesis Research's workflow_meta.json contract.
+"""Validate Stack Anamnesis's workflow_meta.json contract.
 
-Default: validates Anamnesis Research's own root workflow_meta.json (the fusion contract that
+Default: validates Stack Anamnesis's own root workflow_meta.json (the fusion contract that
 the orchestrator drives). Pass --target er to delegate to skills_repo/er's own
 validator over ER's contract instead — those are different schemas and must not be
 mixed.
 
 Usage:
-    python tools/research/validate_workflow_meta.py                     # validate Anamnesis Research root
-    python tools/research/validate_workflow_meta.py --meta path/to/file # validate a specific file as Anamnesis Research schema
+    python tools/research/validate_workflow_meta.py                     # validate Stack Anamnesis root
+    python tools/research/validate_workflow_meta.py --meta path/to/file # validate a specific file as Stack Anamnesis schema
     python tools/research/validate_workflow_meta.py --target er         # delegate to ER's validator over ER's own meta
 """
 from __future__ import annotations
@@ -23,7 +23,7 @@ from _common import find_skill_root, python_exec, script_path  # type: ignore[im
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# Anamnesis Research fusion-contract requirements. Keep in sync with workflow_meta.json shape.
+# Stack Anamnesis fusion-contract requirements. Keep in sync with workflow_meta.json shape.
 REQUIRED_TOP_LEVEL = [
     "schema_version",
     "name",
@@ -71,7 +71,7 @@ def validate_root_meta(meta_path: Path) -> int:
         print(f"error: {meta_path} is not valid JSON: {e}", file=sys.stderr)
         return 2
 
-    print(f"validating Anamnesis Research contract: {meta_path}")
+    print(f"validating Stack Anamnesis contract: {meta_path}")
     errors = 0
 
     for key in REQUIRED_TOP_LEVEL:

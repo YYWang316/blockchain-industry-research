@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-description: Prose explanation of the Anamnesis Research pipeline — what each phase does, what blocks, what runs in parallel, where outputs land. Read this for the phase narrative; read workflow_meta.json for the machine-readable contract. The contract is bracketed by an incident pre-check before P0_intent and an incident post-check before P_DB_INDEX; report and card pipelines are each followed by a parallel red-team review.
+description: Prose explanation of the Stack Anamnesis pipeline — what each phase does, what blocks, what runs in parallel, where outputs land. Read this for the phase narrative; read workflow_meta.json for the machine-readable contract. The contract is bracketed by an incident pre-check before P0_intent and an incident post-check before P_DB_INDEX; report and card pipelines are each followed by a parallel red-team review.
 ---
 
 # Phase contract

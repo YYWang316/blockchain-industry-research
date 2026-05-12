@@ -1,12 +1,21 @@
 <!--
-keywords: Anamnesis Research, Anamnesis Pattern, agent institutional memory, closed-loop agent harness, agent failure log, adversarial AI audit, equity research AI, agent self-correction, cross-session agent memory, harness design, red-team AI agents, CFRV cycle, veteran agent pattern
+keywords: Stack Anamnesis, Anamnesis Pattern, agent institutional memory, closed-loop agent harness, agent failure log, adversarial AI audit, equity research AI, agent self-correction, cross-session agent memory, harness design, red-team AI agents, CFRV cycle, veteran agent pattern
 -->
 
-# Anamnesis Research
+> Built on the **Anamnesis Pattern** (originally developed in the upstream
+> `anamnesis-research` repo for equity research; see
+> `references/anamnesis_pattern.md` for the methodology and
+> `references/equity_incidents_archive.md` for the equity-domain failures
+> that originally shaped it). This repo applies the same harness to crypto
+> payments infrastructure and agentic-payment research, with the central
+> research lens being **stack-position defensibility** — anchored on
+> reference market maps like a16z's stablecoin stack.
+
+# Stack Anamnesis
 
 > **An equity-research harness built on the Anamnesis Pattern — cross-session institutional memory + scheduled adversarial review.**
 >
-> *(Originally codenamed `equiforge` in early development; the codename is retained only as a historical field in `workflow_meta.json` and as the SQLite database name. Everything user-facing — CLI, docs, agent descriptions — is **Anamnesis Research**.)*
+> *(Originally codenamed `equiforge` in early development; the codename is retained only as a historical field in `workflow_meta.json` and as the SQLite database name. Everything user-facing — CLI, docs, agent descriptions — is **Stack Anamnesis**.)*
 
 ---
 
@@ -22,7 +31,7 @@ A veteran is different. A veteran walks in already knowing:
 - *"Auto mode is not authorization to invent a default colour palette — that cost us a full re-render once already."*
 - *"When the macro factor matches a peer's prior run, reuse it; don't re-collect."*
 
-That knowledge is what we lose every time we open a new agent context. **Anamnesis Research is what an agent harness looks like when you refuse to lose it.**
+That knowledge is what we lose every time we open a new agent context. **Stack Anamnesis is what an agent harness looks like when you refuse to lose it.**
 
 The pattern (Greek *ἀνάμνησις*, "recollection") has a four-beat closed loop that:
 
@@ -137,7 +146,7 @@ The Anamnesis Pattern applies to any agent harness where:
 | Automated code review | repeating a known-rejected refactor; suggesting a deprecated API | static-analysis cross-check + "would this work in prod?" challenger |
 | Compliance audit | applying a deprecated control; missing a control that became required | control-coverage matrix + "what's conspicuously absent?" |
 
-The minimum viable Anamnesis harness is: an INCIDENTS-style file + frozen-at-boot + a 2-phase bracket + 2 adversarial agents + a curation command. Anamnesis Research wraps that minimum in an equity-research-specific 33-phase pipeline; your harness can wrap it in something else.
+The minimum viable Anamnesis harness is: an INCIDENTS-style file + frozen-at-boot + a 2-phase bracket + 2 adversarial agents + a curation command. Stack Anamnesis wraps that minimum in an equity-research-specific 33-phase pipeline; your harness can wrap it in something else.
 
 Full pattern definition (with anti-patterns, applicability checklist, and required files): `references/anamnesis_pattern.md`.
 
@@ -145,20 +154,20 @@ Full pattern definition (with anti-patterns, applicability checklist, and requir
 
 ## Repository layout
 
-Anamnesis Research is a **harness-backed skill**: delivered as a skill (`SKILL.md` is the auto-trigger entry), maintained as a production harness (`HARNESS.md` is the architecture doc).
+Stack Anamnesis is a **harness-backed skill**: delivered as a skill (`SKILL.md` is the auto-trigger entry), maintained as a production harness (`HARNESS.md` is the architecture doc).
 
 ```
-anamnesis-research/                 # anamnesis-research (originally codenamed equiforge — see workflow_meta.json)
+stack-anamnesis/                 # stack-anamnesis (originally codenamed equiforge — see workflow_meta.json)
 ├── SKILL.md                        # ★ thin skill entry — boot order, P0 gates, pointers
 ├── HARNESS.md                      # harness/architecture/CLI/tests
 ├── MEMORY.md                       # project invariants — frozen at session start
 ├── INCIDENTS.md                    # ★ append-only failure log — frozen at session start
 ├── USER.md                         # per-user preferences (gitignored; copy from .template)
 ├── workflow_meta.json              # machine-readable phase/gate contract (33 phases)
-├── anamnesis.py                    # CLI entry — Anamnesis Research's deterministic-phase driver
+├── anamnesis.py                    # CLI entry — Stack Anamnesis's deterministic-phase driver
 │
 ├── .claude/                        # Claude Code project-scoped configuration
-│   ├── skills/anamnesis-research/SKILL.md   # project skill mount (auto-discovery)
+│   ├── skills/stack-anamnesis/SKILL.md   # project skill mount (auto-discovery)
 │   ├── settings.json               # hooks block
 │   ├── hooks/inject_incidents.py   # UserPromptSubmit safety net (incident reminder)
 │   └── commands/log-incident.md    # /log-incident slash command (the Curate beat)
@@ -213,8 +222,8 @@ anamnesis-research/                 # anamnesis-research (originally codenamed e
 ## Quick start
 
 ```bash
-git clone <this-repo-url> anamnesis-research
-cd anamnesis-research
+git clone <this-repo-url> stack-anamnesis
+cd stack-anamnesis
 git submodule update --init --recursive    # pull ER + EP submodules (SHA-pinned)
 pip install -r requirements.txt
 python anamnesis.py init                   # build db/equity_kb.sqlite from db/schema/
@@ -241,7 +250,7 @@ The model will pull the latest run's digest, draft a candidate `INCIDENTS.md` en
 
 ## What this repo produces
 
-Anamnesis Research applies the pattern to a **33-phase pipeline** that fuses two upstream skills:
+Stack Anamnesis applies the pattern to a **33-phase pipeline** that fuses two upstream skills:
 
 - **Equity Research** — multi-agent research → interactive HTML report (locked SHA256-pinned template; no simplified bypass per `INCIDENTS.md` I-002)
 - **Equity Photo** — HTML → 6 fixed-layout PNG social cards (2160×2700, palette-locked)

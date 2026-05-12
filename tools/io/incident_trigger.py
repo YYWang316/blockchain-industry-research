@@ -49,11 +49,11 @@ def looks_like_research(prompt: str | None) -> bool:
     return bool(TRIGGER_RE.search(prompt or ""))
 
 
-def build_context(host_label: str = "Anamnesis Research harness", invoked_by: str | None = None) -> str:
+def build_context(host_label: str = "Stack Anamnesis harness", invoked_by: str | None = None) -> str:
     """Return the host-agnostic reminder string to inject.
 
     Args:
-        host_label: appears in the leading bracket (e.g. "Anamnesis Research harness reminder").
+        host_label: appears in the leading bracket (e.g. "Stack Anamnesis harness reminder").
         invoked_by: optional path-or-id of the wrapping hook script, for breadcrumb purposes.
             If omitted, the bracket only mentions the host label.
     """
@@ -66,7 +66,7 @@ def build_context(host_label: str = "Anamnesis Research harness", invoked_by: st
     lines = [
         f"[{breadcrumb}]",
         "",
-        "This prompt looks like an equity-research request. This project is Anamnesis Research, an implementation of the Anamnesis Pattern. Before any phase work:",
+        "This prompt looks like an equity-research request. This project is Stack Anamnesis, an implementation of the Anamnesis Pattern. Before any phase work:",
         f"1. Read {skill.relative_to(REPO_ROOT)} for the boot order and P0 gates.",
         f"2. Read {memory.relative_to(REPO_ROOT)} for project invariants (frozen at session start).",
         f"3. Read {incidents.relative_to(REPO_ROOT)} end-to-end. Acknowledge each incident in meta/run.jsonl as `incident_precheck.acknowledged` during P_INCIDENT_PRECHECK.",

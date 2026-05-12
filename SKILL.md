@@ -1,11 +1,11 @@
 ---
-name: anamnesis-research
+name: stack-anamnesis
 description: >-
   Use this skill whenever the user asks for equity research, an investment write-up, a stock
   report, an analyst-style note, or one-shot company coverage on any single public or private
   company — including casual phrasings like "研究一下苹果", "research Apple", "看看腾讯",
   "做个英伟达的研报", "give me a writeup on NVDA", "build cards for Tencent",
-  "分析一下RA Capital", or "one-pager on Samsung". Drives the full Anamnesis Research
+  "分析一下RA Capital", or "one-pager on Samsung". Drives the full Stack Anamnesis
   pipeline (incident pre-check, bilingual language gate, SEC EDGAR email gate, palette gate,
   multi-agent equity research, red-team review, 6-card social pack, four-layer numerical/OCR/
   web/DB audit, post-run incident self-check, SQLite knowledge-base persistence). Always
@@ -13,9 +13,9 @@ description: >-
   auditable HTML report plus 6 PNG cards plus database rows that ad-hoc answers cannot.
 ---
 
-# Anamnesis Research
+# Stack Anamnesis
 
-You are the orchestrator of an **Anamnesis Research** run — an equity-research pipeline built on the Anamnesis Pattern (cross-session institutional memory + scheduled adversarial review). The skill is thin; the harness is heavy. Your job is to enter the harness correctly, then follow its phase contract. (Originally codenamed `equiforge`; CLI is now `anamnesis.py`.)
+You are the orchestrator of an **Stack Anamnesis** run — an equity-research pipeline built on the Anamnesis Pattern (cross-session institutional memory + scheduled adversarial review). The skill is thin; the harness is heavy. Your job is to enter the harness correctly, then follow its phase contract. (Originally codenamed `equiforge`; CLI is now `anamnesis.py`.)
 
 ## Boot order — read in this order, every session
 
@@ -53,7 +53,7 @@ For per-gate rules, the full whitelist of allowed `source` values, and rejection
 - **Never write to DB** if P12 failed. `P_DB_INDEX` runs only after `P12_final_audit` passes.
 - **Never bypass a P0 gate** by inventing a value. Cost of guessing wrong = full re-run.
 - **Never edit the locked HTML template** during P5. Substitute `{{PLACEHOLDER}}` only — the SHA256 pin in ER's tests will catch you.
-- **Never accept a simplified HTML report.** After P5, run `tools/research/validate_report_html.py`; line-count/section/JS/template-marker failure means the report writer did not use the locked template and P5 must be rerun before P6/P7. There is **no "institution-compatible" / "private-company" / "scope-limited" bypass** for the locked template. Every Anamnesis Research run — public, private, hedge fund, family office, government entity, anything — fills the same locked skeleton. If issuer-level financial statements are unavailable, the report writer fills the locked sections with the best available proxies (AUM/strategy/holdings/manager filings/etc.) and labels gaps inline; it does **not** drop sections, shorten the template, or emit a hand-written page.
+- **Never accept a simplified HTML report.** After P5, run `tools/research/validate_report_html.py`; line-count/section/JS/template-marker failure means the report writer did not use the locked template and P5 must be rerun before P6/P7. There is **no "institution-compatible" / "private-company" / "scope-limited" bypass** for the locked template. Every Stack Anamnesis run — public, private, hedge fund, family office, government entity, anything — fills the same locked skeleton. If issuer-level financial statements are unavailable, the report writer fills the locked sections with the best available proxies (AUM/strategy/holdings/manager filings/etc.) and labels gaps inline; it does **not** drop sections, shorten the template, or emit a hand-written page.
 - **Never invent a packaging profile.** `structure_conformance.json -> profile` must be one of the four whitelisted in `workflow_meta.json -> packaging_profiles`. Strings like `institution_compat_*`, `private_company_*`, `scope_limited_*`, etc. are fabricated and will be rejected in review.
 - **Never invent a status string.** `report_validation.txt`'s top-line status is `pass | warn | critical`, full stop. `pass_with_scope_limitations`, `not_applicable`, `partial_pass`, etc. are fabricated and will be rejected. Same for `structure_conformance.json -> html_template_gate.status` (which must be the literal output of `tools/research/validate_report_html.py`, not a hand-written verdict).
 - **Never persist user emails to the DB.** SEC EDGAR email is a runtime arg only; PII guard in `tests/test_db_pii.py` is non-negotiable.
@@ -63,7 +63,7 @@ For per-gate rules, the full whitelist of allowed `source` values, and rejection
 | When | Command |
 |---|---|
 | First-time setup | `python anamnesis.py init` (builds `db/equity_kb.sqlite` from `db/schema/`) |
-| Pre-flight | `pytest -q` (must be green) and `python tools/research/validate_workflow_meta.py` (validates Anamnesis Research's root contract; pass `--target er` to also check the ER submodule contract) |
+| Pre-flight | `pytest -q` (must be green) and `python tools/research/validate_workflow_meta.py` (validates Stack Anamnesis's root contract; pass `--target er` to also check the ER submodule contract) |
 | Bootstrap a run dir | `python tools/io/run_dir.py --company <slug> --date <YYYY-MM-DD> --run-id <hex>` |
 | P3 Porter schema gate | `python tools/research/validate_porter_analysis.py --run-dir <path>` (must pass before P3.5; reruns at P5 entry — `INCIDENTS.md` I-004) |
 | P5 HTML gate | `python tools/research/validate_report_html.py --run-dir <path> --lang <cn\|en>` (must pass before P6/P7) |

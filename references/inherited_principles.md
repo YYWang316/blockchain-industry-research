@@ -1,11 +1,11 @@
 ---
 schema_version: 1
-description: Principles inherited from Anthropic's "Harness design for long-running apps" and Skills design guidance, mapped to Anamnesis Research's concrete files. These are the foundation the Anamnesis Pattern (references/anamnesis_pattern.md) builds on top of. Read this when extending the harness; cross-check that any change still respects these inherited contracts.
+description: Principles inherited from Anthropic's "Harness design for long-running apps" and Skills design guidance, mapped to Stack Anamnesis's concrete files. These are the foundation the Anamnesis Pattern (references/anamnesis_pattern.md) builds on top of. Read this when extending the harness; cross-check that any change still respects these inherited contracts.
 ---
 
 # Inherited principles
 
-This file collects the principles Anamnesis Research inherits from Anthropic's harness and skill design guidance. These are not Anamnesis Research's own contribution — they are the foundation the **Anamnesis Pattern** (`references/anamnesis_pattern.md`) builds on. The pattern is the project's distinctive contribution; these principles are the prerequisites.
+This file collects the principles Stack Anamnesis inherits from Anthropic's harness and skill design guidance. These are not Stack Anamnesis's own contribution — they are the foundation the **Anamnesis Pattern** (`references/anamnesis_pattern.md`) builds on. The pattern is the project's distinctive contribution; these principles are the prerequisites.
 
 If you are extending the harness, read both files: this one to know what existing contract you must not break, and `anamnesis_pattern.md` to know what active feedback loop you must preserve.
 
@@ -15,7 +15,7 @@ A skill body should fit in the model's working memory at every turn. The harness
 
 | Concrete | Where it lives |
 |---|---|
-| Skill body (auto-loaded, ~500 lines max) | `SKILL.md` (root) and `.claude/skills/anamnesis-research/SKILL.md` (project mount) |
+| Skill body (auto-loaded, ~500 lines max) | `SKILL.md` (root) and `.claude/skills/stack-anamnesis/SKILL.md` (project mount) |
 | Frozen invariants (read once, frozen) | `MEMORY.md`, `INCIDENTS.md` |
 | Phase contract (machine-readable) | `workflow_meta.json` |
 | Per-phase prose | `references/phase_contract.md` |
@@ -105,7 +105,7 @@ If you are tempted to add a metrics service, instead add a file to the run dir.
 
 `.claude/hooks/inject_incidents.py` (UserPromptSubmit hook) injects an `INCIDENTS.md` reminder for research-style prompts. This is **not** a replacement for the model reading the file in `P_INCIDENT_PRECHECK`. It is a second-layer reminder for runs where the SKILL.md auto-trigger may have drifted.
 
-Skill auto-trigger (description match) + project-mount discovery (`.claude/skills/anamnesis-research/SKILL.md`) + UserPromptSubmit hook = three independent paths to "the model reads the right files at the right time." Defence in depth.
+Skill auto-trigger (description match) + project-mount discovery (`.claude/skills/stack-anamnesis/SKILL.md`) + UserPromptSubmit hook = three independent paths to "the model reads the right files at the right time." Defence in depth.
 
 ---
 

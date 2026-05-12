@@ -9,7 +9,7 @@ description: The Anamnesis Pattern — a methodology for building agent harnesse
 
 This file defines a **methodology** for building production agent harnesses, abstracted away from any one application. Anamnesis Research is one implementation (applied to equity research); the pattern is the reusable contribution. Read this if you are designing a new harness — for legal research, medical diagnosis, code review, support triage, or any pipeline where failures are expensive enough to be worth permanent rules.
 
-For why the pattern exists in Anamnesis Research specifically, see `INCIDENTS.md`. For inherited harness/skill principles (Anthropic's foundational guidance) that this pattern *builds on top of*, see `references/inherited_principles.md`.
+For the equity-domain incidents that originally drove this pattern, see `references/equity_incidents_archive.md`. For incidents accumulated in this repo, see `INCIDENTS.md`. For inherited harness/skill principles (Anthropic's foundational guidance) that this pattern *builds on top of*, see `references/inherited_principles.md`.
 
 ## The problem the pattern solves
 
@@ -42,7 +42,7 @@ flowchart LR
       READ["3 · Read<br/>pre-check phase<br/>ack each accumulated rule"]
       READ --> WORK[phase work<br/>matched-incident phases<br/>raise the bar]
       WORK --> ATTACK[adversarial review<br/>scheduled red-team gates]
-      ATTACK --> AUDIT[domain-specific audit<br/>e.g. P12 in Anamnesis Research]
+      ATTACK --> AUDIT[domain-specific audit<br/>e.g. P12 in Stack Anamnesis]
       AUDIT --> VERIFY["4 · Verify<br/>post-check phase<br/>each rule pass | flagged"]
       VERIFY -->|flagged| BLOCK([❌ BLOCK delivery])
       VERIFY -->|pass| DELIVER([✅ deliver])
@@ -73,13 +73,13 @@ When a failure happens, a human writes one append-only entry. The entry has a fi
 
 Curation is the **throttle that prevents memory inflation**. Auto-logged systems pile up noise: every warn becomes an entry, every minor variance becomes a rule, and the prompt eventually drowns. Human curation forces the question *"is this worth being read every session forever?"* — almost everything fails that bar, and that is the point.
 
-In Anamnesis Research: `/log-incident` slash command. The model drafts; the human confirms. Backed by `tools/io/log_incident.py --collect` which produces a digest of the latest run for the human to review.
+In Stack Anamnesis: `/log-incident` slash command. The model drafts; the human confirms. Backed by `tools/io/log_incident.py --collect` which produces a digest of the latest run for the human to review.
 
 Curated entries also have a **lifecycle**. Most entries are `active` (default, no explicit status). When a rule is replaced — the underlying file was refactored away, a stricter rule subsumes it, or the failure mode is no longer reachable — mark the old entry `Status: superseded` and `Superseded by: I-NNN`; the new entry reciprocates with `Supersedes: I-NNN`. The supersede graph is bidirectional and verified by `tools/io/lint_incidents.py` (which also checks monotonic ids and that `Detection:` clauses still point at files that exist on disk). Superseded entries are **never deleted** — they remain in the file as audit trail and as a reminder that the harness *used to* be vulnerable here. The post-check phase records them as `status: "skipped"` rather than re-checking their detection signal.
 
 ### 2. Freeze — append-only, frozen at boot, not retrieved
 
-The entry is appended to a single source-of-truth file (`INCIDENTS.md` in Anamnesis Research). At session boot, the entire file is loaded **verbatim** into the system prompt alongside the project's other invariants (`MEMORY.md`). It is not chunked, embedded, or retrieved on demand. The frozen prompt is captured to `meta/system_prompt.frozen.txt` so audits can replay.
+The entry is appended to a single source-of-truth file (`INCIDENTS.md` in Stack Anamnesis). At session boot, the entire file is loaded **verbatim** into the system prompt alongside the project's other invariants (`MEMORY.md`). It is not chunked, embedded, or retrieved on demand. The frozen prompt is captured to `meta/system_prompt.frozen.txt` so audits can replay.
 
 Why frozen and not retrieved:
 
@@ -97,7 +97,7 @@ Every run's first phase reads INCIDENTS.md end-to-end and writes one acknowledge
 
 When the run reaches a phase whose `Phase` field matches an accumulated incident, the agent **raises the bar** on that surface — strict reading of the contract, no shortcuts, additional cross-checks. The acknowledgement is written before phase work begins; resume-from-log treats a fresh session as needing fresh acks (rules may have been added between sessions).
 
-In Anamnesis Research: `P_INCIDENT_PRECHECK` runs before `P0_intent`.
+In Stack Anamnesis: `P_INCIDENT_PRECHECK` runs before `P0_intent`.
 
 ### 4. Verify — mandatory post-check phase, release-blocking
 
@@ -109,7 +109,7 @@ Before delivery, the run re-reads INCIDENTS.md and confirms each *active* entry'
 
 `skipped` is reserved for entries marked `Status: superseded` — they remain in the file as audit history but the post-check no longer enforces them. Any `flagged` entry **blocks delivery**. Not a warning, not a yellow flag — a hard halt that surfaces the relapse to the user with the exact path that violates the rule. Relapse on a known failure is treated as more serious than a brand-new bug, because the harness already knew about it and the run still failed to comply.
 
-In Anamnesis Research: `P_INCIDENT_POSTCHECK` blocks `P_DB_INDEX`. A flagged post-check means the database is not written for that run. Declared in `workflow_meta.json` as `requires: [domain_audit, P_INCIDENT_POSTCHECK]` so machine-readable runners cannot bypass it.
+In Stack Anamnesis: `P_INCIDENT_POSTCHECK` blocks `P_DB_INDEX`. A flagged post-check means the database is not written for that run. Declared in `workflow_meta.json` as `requires: [domain_audit, P_INCIDENT_POSTCHECK]` so machine-readable runners cannot bypass it.
 
 ## The 5th axis — scheduled adversarial review
 
@@ -130,7 +130,7 @@ These are **distinct** from quality-control peer review:
 
 A clean attacker output (zero findings) is a valid result. The harness must not pressure attackers to manufacture issues. Conversely, a draft that dismisses an attacker's critical finding without writing why is release-blocking.
 
-In Anamnesis Research: `P5_7_RED_TEAM` after the report draft, `P10_7_RED_TEAM` before card render.
+In Stack Anamnesis: `P5_7_RED_TEAM` after the report draft, `P10_7_RED_TEAM` before card render.
 
 ## How this differs from other "agent memory" designs
 
@@ -193,7 +193,7 @@ A conservative path: build the harness without the pattern first. Once you have 
 
 ## Required files (the pattern's footprint)
 
-The pattern requires (with Anamnesis-Research-specific filenames in parentheses):
+The pattern requires (with the pattern's canonical filenames in parentheses):
 
 | Concern | File / surface | Frequency |
 |---|---|---|

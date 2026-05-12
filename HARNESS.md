@@ -1,6 +1,6 @@
-# Anamnesis Research — harness architecture
+# Stack Anamnesis — harness architecture
 
-**Anamnesis Research** is delivered as a skill (entry: `SKILL.md`, slug: `anamnesis-research`) and maintained as a production harness (this file). It was originally codenamed `equiforge` during early development; that codename is now retained only as a historical `"codename"` field in `workflow_meta.json` and as the namespace prefix for the SQLite database (`db/equity_kb.sqlite`). Everything user-facing — CLI, docs, agent descriptions — uses the public name, **Anamnesis Research**.
+**Stack Anamnesis** is delivered as a skill (entry: `SKILL.md`, slug: `stack-anamnesis`) and maintained as a production harness (this file). It was originally codenamed `equiforge` during early development; that codename is now retained only as a historical `"codename"` field in `workflow_meta.json` and as the namespace prefix for the SQLite database (`db/equity_kb.sqlite`). Everything user-facing — CLI, docs, agent descriptions — uses the public name, **Stack Anamnesis**.
 
 The skill side tells the model *what to do*; the harness side defines *how the run is executed, persisted, audited, and resumed*. If you are running the pipeline, read `SKILL.md`. If you are extending the harness — adding a tool, changing the DB schema, wiring a new audit layer — start here.
 
@@ -8,7 +8,7 @@ The skill side tells the model *what to do*; the harness side defines *how the r
 
 | Surface | Audience | Source of truth |
 |---|---|---|
-| Skill (auto-triggered) | LLM / Codex / Claude | `SKILL.md` (root, canonical) + `.claude/skills/anamnesis-research/SKILL.md` (project mount for auto-discovery) |
+| Skill (auto-triggered) | LLM / Codex / Claude | `SKILL.md` (root, canonical) + `.claude/skills/stack-anamnesis/SKILL.md` (project mount for auto-discovery) |
 | Workflow contract | Both | `workflow_meta.json` (machine-readable phases) |
 | Project invariants | LLM | `MEMORY.md` (frozen at session start) |
 | Institutional failure log | LLM | `INCIDENTS.md` (frozen at session start, append-only) |
@@ -27,7 +27,7 @@ The split exists because the skill anatomy spec only allows `name` + `descriptio
 ## Repository layout
 
 ```
-anamnesis-research/
+stack-anamnesis/
 ├── SKILL.md                # ★ canonical skill entry — thin, strict, boot order
 ├── HARNESS.md              # this file — harness/architecture/CLI/tests
 ├── MEMORY.md               # project invariants, frozen at session start
@@ -37,7 +37,7 @@ anamnesis-research/
 ├── anamnesis.py            # CLI entry (init, status, etc.)
 │
 ├── .claude/                # Claude Code project-scoped configuration
-│   ├── skills/anamnesis-research/SKILL.md   # project skill mount (auto-discovery)
+│   ├── skills/stack-anamnesis/SKILL.md   # project skill mount (auto-discovery)
 │   ├── settings.json               # hooks block (UserPromptSubmit reminder)
 │   ├── hooks/inject_incidents.py   # injects INCIDENTS reminder on research-style prompts
 │   └── commands/log-incident.md    # /log-incident slash command spec
@@ -87,8 +87,8 @@ anamnesis-research/
 
 ```bash
 # First-time setup
-git clone <repo> anamnesis-research
-cd anamnesis-research
+git clone <repo> stack-anamnesis
+cd stack-anamnesis
 git submodule update --init --recursive
 pip install -r requirements.txt
 python anamnesis.py init                # builds db/equity_kb.sqlite from db/schema/
@@ -160,20 +160,20 @@ pytest -q                                  # must be green
 git commit -m "bump er submodule to <short-sha>"
 ```
 
-If the upstream ER skill changes the locked HTML template, the upstream maintainer updates the SHA256 in `skills_repo/er/tests/test_extract_report_template.py`. Anamnesis Research picks it up on the next bump.
+If the upstream ER skill changes the locked HTML template, the upstream maintainer updates the SHA256 in `skills_repo/er/tests/test_extract_report_template.py`. Stack Anamnesis picks it up on the next bump.
 
 ### Why root `agents/` is Anamnesis-Research-only (no symlinks to upstream)
 
-`agents/` contains **only** Anamnesis Research's own orchestration briefs (`orchestrator`, `intent_resolver`, the four gate agents, `cross_validator`, `post_card_auditor`). It does **not** symlink or alias the upstream `skills_repo/er/agents/*` and `skills_repo/ep/agents/*` files. Why:
+`agents/` contains **only** Stack Anamnesis's own orchestration briefs (`orchestrator`, `intent_resolver`, the four gate agents, `cross_validator`, `post_card_auditor`). It does **not** symlink or alias the upstream `skills_repo/er/agents/*` and `skills_repo/ep/agents/*` files. Why:
 
 - **One canonical path per agent.** `meta/run.jsonl` and audit artifacts always log the real path. No "did this come from the symlink or the submodule?" ambiguity.
 - **Stale-symlink risk on submodule bumps.** Renames upstream silently break aliases while `ls agents/` still looks healthy. Since nothing reads the aliases, the breakage stays invisible until a live phase fails.
-- **Semantic separation.** `agents/` is for things Anamnesis Research owns and can change. `skills_repo/{er,ep}/agents/` is upstream territory we pin and consume.
+- **Semantic separation.** `agents/` is for things Stack Anamnesis owns and can change. `skills_repo/{er,ep}/agents/` is upstream territory we pin and consume.
 - **Future-proof for `agents/openai.yaml`.** When we add UI/runtime metadata at `agents/openai.yaml`, the directory should not also contain dozens of upstream-owned briefs — the two concerns don't belong together.
 
 `workflow_meta.json` and `agents/orchestrator.md` reference upstream agents by their **real submodule path** (`skills_repo/er/agents/financial_data_collector.md`, `skills_repo/ep/agents/logo-production-agent.md`, etc.). The path is the audit surface — keep it honest.
 
-Symlinking back into `agents/` would only be justified if some harness or environment could only read from a single flat directory. Anamnesis Research has no such constraint, so we don't pay the cost.
+Symlinking back into `agents/` would only be justified if some harness or environment could only read from a single flat directory. Stack Anamnesis has no such constraint, so we don't pay the cost.
 
 ## Incident loop
 
@@ -208,7 +208,7 @@ Critical findings from either attacker loop the writer once with a combined revi
 
 Project-scoped under `.claude/`. Three independent surfaces:
 
-- **`.claude/skills/anamnesis-research/SKILL.md`** — auto-discovered skill mount. Lets Claude Code find the skill from any folder under this project. Canonical content is at the repo root `SKILL.md`; this file is a thin pointer with the same frontmatter so description-based auto-trigger works. Edit both when you change the description.
+- **`.claude/skills/stack-anamnesis/SKILL.md`** — auto-discovered skill mount. Lets Claude Code find the skill from any folder under this project. Canonical content is at the repo root `SKILL.md`; this file is a thin pointer with the same frontmatter so description-based auto-trigger works. Edit both when you change the description.
 - **`.claude/settings.json` + `.claude/hooks/inject_incidents.py`** — UserPromptSubmit hook. On every prompt, the hook checks for research-style trigger phrases (EN/ZH); if matched, it injects an `INCIDENTS.md` reminder into the model's context as a safety net. No-op for non-research prompts.
 - **`.claude/commands/log-incident.md`** — slash command. User types `/log-incident <description>` to draft a new INCIDENTS entry from the latest run.
 
@@ -218,14 +218,14 @@ The hook is a safety net, not a substitute. The orchestrator must still read `IN
 
 - **No skill self-improvement / DSPy / GEPA optimizer.** Auditability beats agility. Every numeric in a card is traceable to a source JSON to a frozen system prompt to a submodule SHA.
 - **No code-execution sandbox.** Everything is a registered tool under `tools/`. The LLM cannot exec arbitrary Python.
-- **No multi-tenant routing.** Single user, local SQLite, single process. Run two Anamnesis Research instances in two terminals if you want concurrency.
+- **No multi-tenant routing.** Single user, local SQLite, single process. Run two Stack Anamnesis instances in two terminals if you want concurrency.
 - **No streaming UI.** CLI in, files out. The output folder is the deliverable.
 
 ## When to update what
 
 | You are changing… | Update |
 |---|---|
-| What the skill triggers on | `SKILL.md` description **and** `.claude/skills/anamnesis-research/SKILL.md` description (keep in sync) |
+| What the skill triggers on | `SKILL.md` description **and** `.claude/skills/stack-anamnesis/SKILL.md` description (keep in sync) |
 | Boot order / commands the model must run | `SKILL.md` body |
 | What a phase produces / its tool | `workflow_meta.json` + `references/phase_contract.md` |
 | Per-gate rules (whitelist, sticky source) | `references/p0_gates.md` |
@@ -237,7 +237,7 @@ The hook is a safety net, not a substitute. The orchestrator must still read `IN
 | Hook trigger phrases (when the UserPromptSubmit reminder fires) | `.claude/hooks/inject_incidents.py` `TRIGGER_PATTERNS` |
 | Slash commands | `.claude/commands/<name>.md` (spec) + `tools/io/<name>.py` (backend, if needed) |
 | DB schema | new `db/schema/00X_*.sql` + bump `PRAGMA user_version` + run migration tests |
-| Locked HTML template | upstream `skills_repo/er` only — Anamnesis Research bumps the submodule |
+| Locked HTML template | upstream `skills_repo/er` only — Stack Anamnesis bumps the submodule |
 | Architecture / CLI / dev workflow | this file (`HARNESS.md`) |
 | The Anamnesis Pattern (methodology, generalised) | `references/anamnesis_pattern.md` |
 | Inherited principles (Anthropic harness/skill foundations) | `references/inherited_principles.md` |
