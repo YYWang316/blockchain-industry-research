@@ -104,17 +104,130 @@ These belong to the inherited EP (Equity Photo) pipeline's P7..P11 phases. With 
 
 ## TD-009 — Re-introduce secret-handling discipline (model on retired SEC EDGAR rule) when first secret-requiring crypto API is integrated
 
+**Status:** **closed 2026-05-13** by B.0 #1.5 — pattern instantiated for SEC EDGAR in `references/data_source_registry.md` §6 (re-added as the sixth registered source with the I-003-style two-UA contract: `sec_user_agent` for `*.sec.gov` hosts only; `public_user_agent` PII-free for everything else). The MEMORY.md privacy-invariant bullet returns in B.0 #16 (MEMORY.md rewrite). Template preserved here as forward reference for the next secret-requiring source (Dune API key, Etherscan/Alchemy/Infura/QuickNode keys, Pro CoinGecko key) when those land in B.1.5+.
+
 **Decision (2026-05-12):** Removed the SEC EDGAR email privacy bullet from `MEMORY.md`'s `## Privacy invariants` section. The deleted bullet stated: "SEC EDGAR email is **never** persisted. It lives only as a runtime arg to `tools/research/sec_edgar_fetch.py`." With `P0_sec_email` retired and SEC EDGAR not a crypto-domain data source, the rule has no live surface.
 
 **Why:** The *shape* of the rule (never-persist, runtime-only, regex redaction guard with a `tests/test_db_pii.py` regression) is the right template for any future API key or credential the crypto harness needs — Dune API key, Alchemy/Infura/QuickNode keys, Etherscan family keys, Pro CoinGecko key, RPC bearer tokens (see `references/data_source_registry.md` for the full key inventory). But the SEC-specific instance does not apply. Removing it now and re-introducing the pattern when the first secret-requiring API is integrated keeps the harness from carrying a dead rule while preserving the template's existence as this TD.
 
 **Revisit when:**
 
-- The first secret-requiring crypto API is integrated (likely Dune or Etherscan during the first `output_format: report` run), AND
-- A `tests/test_db_pii.py`-style regression is wired for the new secret family — at which point the pattern returns to `MEMORY.md` with the new key family name in place of `sec_email`, the new redaction regex in place of the email regex, and the new key path (`~/.config/anamnesis/<provider>.key` per `references/data_source_registry.md`) replacing the SEC EDGAR runtime arg
+- ~~The first secret-requiring crypto API is integrated~~ — fulfilled by SEC EDGAR re-add in B.0 #1.5.
+- The next non-SEC secret-requiring API is integrated (Dune, Etherscan, CoinGecko Pro, or any RPC tier) — re-open as TD-009b or a new TD for that key family. The shape of this entry is the template: per-source key file (`~/.config/anamnesis/<provider>.key`), per-source redaction guard, `tests/test_db_pii.py`-style regression.
 
 ## TD-010 — Phase B harmonization pass: stale MEMORY.md references in orchestrator.md §P1+ and HARNESS.md ownership table
 
 **Decision (2026-05-12):** orchestrator.md:174 references "QC scoring math from MEMORY.md" (the equation deleted in Phase A per TD-007), and HARNESS.md:240 lists "Locked HTML template" in an ownership table (the hard rule deleted in Phase A per TD-006). Phase A's scope discipline (P0-only) left these untouched. Both will be resolved during Phase B's broader orchestrator §P1+ and HARNESS rewrites.
 
 **Revisit when:** Phase B redesigns the P1+ pipeline (which will rewrite orchestrator §P1+ end-to-end) and the HARNESS overview (which will rebuild the ownership table for the crypto-shaped pipeline).
+
+## TD-011 — Validate seed CIKs on first SEC EDGAR fetch
+
+**Decision (2026-05-13):** Coinbase, Galaxy Digital, Marathon Digital, and Robinhood entries in `references/subject_relationships.yaml` were drafted in B.0 #2 from non-SEC public sources only (the path-(a) workflow restriction is strict: agent may not consult SEC EDGAR to verify SEC-listing facts because `P0_sec_email` has not yet fired). Their `sources:` URLs are investor-relations pages, not EDGAR filings. The CIKs are not yet recorded; the `note:` field on each entry flags this.
+
+**Why:** Path (a)'s restriction (no SEC EDGAR) is load-bearing — it prevents a chicken-and-egg dependency where the table entry needed to fire the gate is itself fetched via the gate's downstream API. The honest state of the table is "drafted from public sources; SEC verification pending first run".
+
+**Required action when the first SEC EDGAR fetcher invocation lands** for each entity in B.1+: verify the CIK against EDGAR, update the entry with `sources: + <SEC EDGAR URL with CIK>` (don't replace existing sources, append), and refresh `confirmed_at: <that run's date>` so `next_review_due` slides forward by 6 months. If the CIK lookup returns a name mismatch, surface as an incident (the entry's listed-claim is wrong and the gate fired on bad data).
+
+Circle's CIK (`0001876042`) is already user-confirmed and does not need re-verification.
+
+**Revisit when:** B.1's first SEC EDGAR fetcher lands and runs against any of (Coinbase, Galaxy Digital, Marathon Digital, Robinhood).
+
+## TD-012 — Implement subject_relationships.yaml lint tool
+
+**Decision (2026-05-13):** `tools/io/lint_subject_relationships.py` is referenced in `references/subject_relationships_design.md` as the pre-check lint surface but does not yet exist. Authoring it in B.0 is out of scope (B.0 is documentation + agent contracts, no new tooling); B.1's first SEC EDGAR fetcher is the natural pairing because that's when the table starts changing under real runs. Lints the data file `references/subject_relationships.yaml` (pure YAML; `yaml.safe_load` parse — no markdown parsing needed since the B.0 mid-flight split moved design rationale to a separate `_design.md` file).
+
+**Required behaviour:**
+
+- Validate `schema_version: 1`.
+- For every entry, validate required fields are present and well-shaped: `subject_entity_type`, `listed` (bool), `confirmed_by` (`user` or `user_direct`), `confirmed_at` (ISO date), `next_review_due` (ISO date), `sources` (non-empty list of URLs), `relationship_to_subject` (string, defaults `self`).
+- When `listed: true`, `ticker` and `exchange` must be non-null strings; when `listed: false`, both must be `null`.
+- `next_review_due >= confirmed_at` and `next_review_due <= confirmed_at + (review_cadence_months OR 6) + 14d` drift tolerance. The optional `review_cadence_months` field overrides the default 6-month cadence — Stripe's seed entry sets `review_cadence_months: 3` due to active IPO speculation; the lint must read the structured field, not parse the prose `note:`.
+- Every URL in `sources:` resolves via HEAD request (allow `200/301/302`; warn on `4xx/5xx/timeout`).
+- `pending_fill[].name` does not collide with any `entries:` key.
+
+**Run surfaces:**
+
+- `P_INCIDENT_PRECHECK` at run start (warn on stale `next_review_due`, error on missing required fields).
+- Commit-time hook (so edits to `subject_relationships.yaml` are linted before commit).
+- Manual invocation: `python tools/io/lint_subject_relationships.py [--check-urls]`.
+
+**Revisit when:** B.1 SEC EDGAR fetcher lands (paired implementation).
+
+## TD-013 — Implement append_subject_entry.py atomic write tool
+
+**Decision (2026-05-13):** `tools/io/append_subject_entry.py` — thin wrapper around `yaml.safe_load` / `yaml.safe_dump` on `references/subject_relationships.yaml`, with atomic write (temp file + `os.replace` rename). Adds an entry under `entries:`, preserves alphabetical key order, removes the corresponding `pending_fill[]` stub if one exists, and refuses to overwrite an existing entry without an explicit `--update` flag. B.1 paired with the first SEC EDGAR fetcher (entries start changing under real runs at that point).
+
+**Why it is its own TD:** the write tool is called from `agents/subject_class_resolver.md` path (a) step 4 and path (c) step 3. Authoring it in B.0 is out of scope (B.0 = documentation + agent contracts, no new tooling).
+
+**History:** Original TD-013 scope was a 9-step parser-based tool targeting a markdown+YAML hybrid format. Reduced mid-flight in B.0 when data and design were split into separate files (`subject_relationships.yaml` + `subject_relationships_design.md`), eliminating the parser need. See "B.0 #16 MEMORY.md staging — pending lessons" below for the design lesson that drove the split.
+
+**Revisit when:** B.1 SEC EDGAR fetcher lands (paired implementation, alongside TD-012).
+
+## TD-014 — Consolidated event vocabulary registry
+
+**Status:** **close-as-unnecessary 2026-05-13** during B.0 mid-flight restart to 4-gate design.
+
+Original premise: 7-gate framework introduced 11+ meta/run.jsonl event names across agents, raising drift and forgotten-consumer concerns. User identified that 7-gate design was over-engineering inherited from Phase A; simplified 4-gate design has far fewer events. The drift risk that motivated TD-014 is substantially reduced.
+
+**Resolution:** 4-gate design's event vocabulary is small enough to maintain inline in each agent file's "Events" section without a separate registry. If event count grows to 15+ in future phases (B.5+ red team, B.6 validator), revisit.
+
+**Preserve as audit trail because:** the consolidated registry pattern itself may be valuable when event count grows. Reopen with explicit new justification (e.g., "we now have 20+ events across 8 agents and drift is occurring") rather than silently revive.
+
+**History:** opened 2026-05-13 during 7-gate framework design; closed same day during mid-flight restart to 4-gate design.
+
+## TD-015 — Orchestrator support for restart-from-gate
+
+**Status:** **closed-as-unnecessary 2026-05-13** during B.0 #6 review.
+
+Original premise: `scope_gate` path (a) narrow needed an internal restart-from-gate mechanism to continue the same run with a narrowed prompt. User challenged this design as overengineered given that the sector pipeline is not implemented and the narrowed prompt is genuinely a different prompt, not the same one "fixed".
+
+**Resolution:** path (a) was redesigned to abort the current run and ask the user to re-run with the new prompt as a fresh single-pipeline run. No orchestrator restart mechanism needed.
+
+**Preserve as audit trail because:** if a future scenario genuinely needs restart-from-gate semantics (e.g., a writer agent discovers a Part 4.1 lineage gap and needs to revise `parent_or_issuer` mid-run), this TD documents the prior consideration and its negative resolution. Reopen with explicit new justification; do not silently revive.
+
+**History:** original decision (2026-05-13) closed within the same session by a user mid-flight correction.
+
+---
+
+## B.0 #16 MEMORY.md staging — pending lessons
+
+Lessons surfaced during B.0 sub-phase work that should land in `MEMORY.md` when deliverable #16 (MEMORY.md rewrite for the 7-gate set) is executed. This is a recurring slot — append new lessons as they emerge.
+
+### Lesson: "human readability" is not a default assumption
+
+When designing spec files in an LLM-agent workflow, ask "who directly reads this file, when?" before optimizing for human readability. Many agent-mediated workflows have users interact only via agent translation — direct file reads are rare. Optimizing for "human readability inline with data" in those cases may add complexity (e.g., needing a parser-based write tool for markdown-with-YAML) rather than reduce it.
+
+**Origin:** B.0 #2 originally designed `references/subject_relationships.md` as a markdown+YAML hybrid. User challenged the "human readability" assumption mid-flight (B.0 mid-flight session, 2026-05-13); correct architecture was data (`.yaml`) + design (`.md`) split. TD-013 reduced from 9-step parser to 3-line pyyaml wrapper.
+
+**Applies to:** future spec file design. Don't default to markdown+YAML hybrid without first justifying why a human directly reads the file. If the answer is "they don't, the agent translates", split data from design.
+
+### Lesson: mid-flight course corrections are first-class moves
+
+When a foundational assumption is challenged mid-deliverable, pause the deliverable, steel-man the challenge, sanity-check the alternative architecture **before** editing files. The cost of a 10-step migration before deeper work depends on the wrong architecture is far smaller than the cost of unwinding the wrong architecture after it has propagated to 5+ files. Mid-flight corrections are not "thrash" — they are the cheapest point at which to catch a wrong design.
+
+**Origin:** B.0 #2 markdown+YAML → split into `.yaml` + `_design.md`, mid-flight during B.0 deliverable sequencing, 2026-05-13. The pattern executed: user challenged the assumption in one sentence; agent steel-manned the challenge instead of defending the design; we paused and sanity-checked the split before any file changes; 10-step migration executed atomically; lesson staged for permanent capture in `MEMORY.md`. This is the Anamnesis Pattern working as designed — catch design errors early, write the lesson, don't pay the cost twice.
+
+**Applies to:** any deliverable where a foundational assumption surfaces under challenge. The right move is to pause, not to defend. Pausing is cheaper than unwinding.
+
+**Additional origin (2026-05-13, same day as #2 split):** B.0 mid-flight restart to 4-gate design. Discovered 7-gate framework was inherited from Phase A equity-era without challenging whether it served crypto research workflow. Restart cost: 7 agent files removed (~1600 lines of in-progress design work), ~5.5 session redo. Restart vs unwinding cost ratio: ~1:3 (mid-flight cheaper than post-completion correction).
+
+The pattern reinforced: when foundational assumption is challenged, steel-man the challenge, restart cleanly, do not patch around it.
+
+### Lesson candidate: "different prompt = different run"
+
+When a P0 gate's processing implies that the user's intent warrants a different prompt (e.g., narrowing a sector prompt to a single-subject prompt), the right architectural move is **abort + ask the user to re-run**, NOT internal restart-from-gate with prompt substitution. Two prompts means two runs; the audit trail of each run is cleaner if it corresponds to exactly one prompt. Internal restart mechanisms that splice two prompts into one run trade audit clarity for marginal UX savings (one extra command typed by the user vs. mangled audit history).
+
+**Origin:** B.0 #6 (`agents/scope_gate.md`) initially designed path (a) sector narrow with internal restart-from-gate; user challenged the necessity 2026-05-13; correction made path (a) abort + user re-run; TD-015 (orchestrator restart capability) closed-as-unnecessary.
+
+**Applies to:** future gate design when "user changed their mind / clarified intent" could be interpreted as "same run, patch state" vs. "different intent, new run". Default to "different intent = new run" unless there is explicit justification for in-run patching.
+
+### Lesson candidate: over-engineering through inherited framework
+
+When forking a harness for a new domain, the inherited framework's shape (gate count, decision points, abstractions) must be challenged against the new domain's actual workflow — NOT silently adopted as default. Inherited frameworks carry assumptions about user behavior that may not transfer. The cost of detecting framework mismatch early (mid-design) is far smaller than detecting it late (mid-implementation).
+
+**Origin:** Phase A inherited 7-gate framework from equity research era. Phase B silently extended it without asking "what does the crypto research workflow actually need?" Mid-flight at B.0 #9 (after 9 ship deliverables), user described a 4-step user-visible flow that exposed 3 gates as over-engineering. Restart cost was 5.5 session; unwinding after B.0 completion would have been 12+ session.
+
+**Applies to:** any fork or domain extension. Before adopting inherited framework, walk through the new domain's actual user workflow end-to-end and verify each framework element earns its place. Default to fewer abstractions, not more.
+
+**Detection signal:** if you can't immediately answer "what does GATE_X do for THIS user's workflow", that gate may be over-engineering. The answer should be specific to the new domain, not generic.

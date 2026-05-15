@@ -39,3 +39,24 @@ Thumbs.db
 .idea/
 *.swp
 .claude/settings.local.json
+
+# Private user data — never commit
+USER.md
+*.private.md
+
+# Run artifacts — local only, never commit
+output/
+
+# Secrets directory (API keys, SEC email cache 等)
+~/.config/anamnesis/
+
+# Standard
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+.env*
+
+# IDE
+.vscode/settings.local.json
+.idea/
